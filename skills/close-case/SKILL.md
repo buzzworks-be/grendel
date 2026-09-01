@@ -14,12 +14,12 @@ Heimdall runs from a checkout or from an installed plugin, and the scripts sit
 in a different place in each. Resolve it once, at the top of your shell work:
 
 ```sh
-H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this checkout otherwise
+H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this directory otherwise
 ```
 
 Then invoke everything as `"$H"/bin/<name>`. The variable is set in the
-environment by the plugin host, so the expansion is correct in both modes
-without the skill needing to know which one it is in.
+environment when Heimdall is installed, so the expansion is correct without the
+skill needing to know where it is running from.
 
 ## Why this exists
 

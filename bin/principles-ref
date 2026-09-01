@@ -16,13 +16,13 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODE="$("$ROOT/bin/heimdall-state" --mode)"
 
 # A case file's principles_sha answers "which standard read this", and that
-# question has to survive the mode. Installed as a plugin there may be no git
-# history to take a sha from, so the plugin's own version is pinned instead —
-# less precise, and honest about being less precise, which beats a case file
-# that cites nothing.
-# Mode decides this, not the presence of a git repository. The plugin's code
-# root is a managed cache that an update replaces wholesale, so no sha taken
-# from it means anything — and if that cache happens to sit inside some
+# question has to survive both installations. Installed as a plugin there may be
+# no git history to take a sha from, so the plugin's own version is pinned
+# instead — less precise, and honest about being less precise, which beats a
+# case file that cites nothing.
+# Where the code root is decides this, not the presence of a git repository. The
+# plugin's code root is a managed cache that an update replaces wholesale, so no
+# sha taken from it means anything — and if that cache happens to sit inside some
 # unrelated repository (a dotfiles checkout, say), the old condition fell
 # through and stamped THAT repository's sha into the case file as the standard
 # the reading was made against. A case file citing a frame that never existed is
@@ -46,9 +46,9 @@ if [ -n "$dirty" ]; then
     echo "heimdall: principles/ has uncommitted changes — refusing to assess."
     echo "$dirty" | sed 's/^/  /'
     echo
-    echo "This is build mode, not run mode. Commit the rules, then assess"
-    echo "against them. A case file cites rule ids; if the rules move underneath"
-    echo "it, the citation points at something that was never applied."
+    echo "Commit the rules, then assess against them. A case file cites rule"
+    echo "ids; if the rules move underneath it, the citation points at something"
+    echo "that was never applied."
   } >&2
   exit 4
 fi

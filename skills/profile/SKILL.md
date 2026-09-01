@@ -29,24 +29,23 @@ anyone. What the case file says about people is nothing.
 
 ## Where the scripts are
 
-Heimdall runs from a checkout or from an installed plugin, and the scripts sit
-in a different place in each. Resolve it once, at the top of your shell work:
+Resolve it once, at the top of your shell work:
 
 ```sh
-H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this checkout otherwise
+H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this directory otherwise
 ```
 
 Then invoke everything as `"$H"/bin/<name>`. The variable is set in the
-environment by the plugin host, so the expansion is correct in both modes
-without the skill needing to know which one it is in.
+environment when Heimdall is installed, so the expansion is correct without the
+skill needing to know where it is running from.
 
 ## Before you start
 
-You write to `cases/` and nowhere else. **In a checkout** that is run mode; in
-particular you do not touch `principles/` during an assessment — a rule that
-changes while it is being applied makes the case file unreproducible. If a rule
-is wrong, that is a finding about the rules; record it and fix it later in
-build mode.
+You write to `cases/` and nowhere else. In particular you do not touch
+`principles/` during an assessment — a rule that changes while it is being
+applied makes the case file unreproducible. If a rule is wrong, that is a
+finding about the rules: record it, and leave the fix to whoever works on
+Heimdall itself.
 
 1. A target must be attached (`/stakeout` if not).
 2. Pin the principles:
@@ -165,14 +164,14 @@ moved as a result. A reader comparing the two should not have to diff them.
 
 Then **hand it over**: send the file to the user (`SendUserFile`), or pass its
 path to whoever asked. Do not commit it. It is gitignored because it carries the
-target inside it, and Heimdall's history must stay clean of that — run
-`"$H"/bin/check-no-leak` before any commit you make in run mode.
+target inside it, and Heimdall's own files must stay clean of that — run
+`"$H"/bin/check-no-leak` before committing anything while a target is attached.
 
 The case file must let someone re-derive your conclusion without rerunning you,
 and without access to Heimdall's checkout. That is why the template asks you to
 quote what each violated rule requires rather than citing an id alone.
 
-## Conducted mode
+## When run as a workflow step
 
 When this skill runs as a step in an orchestrated workflow, three things change
 and nothing else does:

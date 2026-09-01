@@ -12,27 +12,17 @@ interpretation that a reader may want to re-run without repeating it.
 
 ## Where the scripts are
 
-Heimdall runs from a checkout or from an installed plugin, and the scripts sit
-in a different place in each. Resolve it once, at the top of your shell work:
+Resolve it once, at the top of your shell work:
 
 ```sh
-H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this checkout otherwise
+H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this directory otherwise
 ```
 
 Then invoke everything as `"$H"/bin/<name>`. The variable is set in the
-environment by the plugin host, so the expansion is correct in both modes
-without the skill needing to know which one it is in.
+environment when Heimdall is installed, so the expansion is correct without the
+skill needing to know where it is running from.
 
-## First: declare the mode
-
-**In a checkout**, opening a case puts you in run mode from this point; say so.
-In a plugin there is no Heimdall repository and no other mode, so do not raise
-the subject — naming a mode where only one exists invites the reader to ask
-what the other one is. The git posture
-is total abstinence and it is in the operating contract: stay on `main`, create
-no branch — not even one a harness assigned you — commit nothing, push nothing.
-That is what keeps the target's name off this repository's remote, including out
-of a branch name, where every content rule would still be satisfied.
+## Before attaching
 
 If a target is already attached and the user has not asked to change it, do not
 re-attach: say what is attached and ask.
@@ -77,8 +67,8 @@ cheap read:
 **Identity** — URL or path, default branch, HEAD sha, attach time.
 **Reachability** — that `"$H"/bin/target-git log --oneline -1` returns, so the clone
 is known good rather than assumed good.
-**Posture** — in a checkout, that you are in run mode and what that forbids.
-In a plugin, that Heimdall reads the target and never writes to it.
+**Posture** — that Heimdall reads the target and never writes to it, and that
+nothing identifying it enters Heimdall's own files.
 
 Then stop and offer the survey. Everything else — history, shape, workflow
 facts, observer-awareness, the target's stated conventions — belongs to
@@ -90,6 +80,6 @@ Heimdall reads the target and writes only to its own repo. A fix you would like
 to make is a finding, not a commit: never open a PR, push a branch, or comment
 on the target from a Heimdall session.
 
-And nothing identifying the target enters Heimdall's history. From here until
-`/close-case`, `"$H"/bin/check-no-leak` is the guard, and it must pass before
-anything is committed in this checkout.
+And nothing identifying the target enters Heimdall's own tracked files. From
+here until `/close-case`, `"$H"/bin/check-no-leak` is the guard; run it before
+committing anything while a target is attached.

@@ -13,25 +13,20 @@ Nothing here writes. That is why it is separate from `/open-case` and why it
 can be re-run at any point in a case — after a refresh, before profiling a
 second increment, or when a finding makes you doubt what normal looks like here.
 
-**In a checkout** you remain in run mode: on `main`, no branch, no commit, no
-push. **In a plugin** there is no Heimdall repository to be disciplined about,
-so there is nothing to say and no mode to name.
-
 If no target is attached, `"$H"/bin/target-git` will say so. Do not attach one here
 — hand back to `/open-case`, which is where that decision belongs.
 
 ## Where the scripts are
 
-Heimdall runs from a checkout or from an installed plugin, and the scripts sit
-in a different place in each. Resolve it once, at the top of your shell work:
+Resolve it once, at the top of your shell work:
 
 ```sh
-H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this checkout otherwise
+H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this directory otherwise
 ```
 
 Then invoke everything as `"$H"/bin/<name>`. The variable is set in the
-environment by the plugin host, so the expansion is correct in both modes
-without the skill needing to know which one it is in.
+environment when Heimdall is installed, so the expansion is correct without the
+skill needing to know where it is running from.
 
 ## Report
 
@@ -127,7 +122,7 @@ Heimdall reads the target and writes only to its own repo. A fix you would like
 to make is a finding, not a commit. Never open a PR, push a branch, or comment
 on the target from a Heimdall session.
 
-And nothing identifying the target enters Heimdall's history: the observation
-you report lives in chat or in a gitignored artifact, never in a tracked file
-or a commit message. `"$H"/bin/check-no-leak` guards this — run it before committing
-anything after a target is attached.
+And nothing identifying the target enters Heimdall's own tracked files: the
+observation you report lives in chat or in a gitignored artifact, never in a
+tracked file or a commit message. `"$H"/bin/check-no-leak` guards this — run it
+before committing anything while a target is attached.

@@ -8,7 +8,7 @@
       "name": "heimdall",
       "source": "./",
       "description": "Read a repository you do not touch, and write a case file about how the work in it was produced.",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "author": {
         "name": "buzzworks-be"
       },
