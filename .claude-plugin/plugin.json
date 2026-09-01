@@ -1,0 +1,18 @@
+{
+  "name": "heimdall",
+  "version": "0.5.0",
+  "description": "Read a repository you do not touch, and write a case file about how the work in it was produced.",
+  "author": {
+    "name": "buzzworks-be"
+  },
+  "homepage": "https://github.com/buzzworks-be/grendel",
+  "keywords": [
+    "governance",
+    "process",
+    "audit",
+    "read-only",
+    "case-file"
+  ],
+  "repository": "https://github.com/buzzworks-be/grendel",
+  "license": "Apache-2.0"
+}

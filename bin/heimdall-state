@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+"""
+Print the directory Heimdall keeps its state in, creating it if needed.
+
+Heimdall has two roots and conflating them is the defect this exists to
+prevent.
+
+**Code root** — `principles/`, `bin/`, the rules. Every script already finds it
+from its own location, and that stays correct in both modes.
+
+**State root** — `.heimdall/` (the attached target) and `cases/` (the readings).
+In a checkout these sit beside the code. Installed as a plugin they cannot: the
+plugin root is a managed cache, replaced wholesale on update and shared across
+every project, so state written there would be destroyed by an update and
+visible to projects it does not belong to.
+
+Resolution, in order:
+
+1. `$HEIMDALL_STATE` if set — always wins, so a checkout can be pointed
+   elsewhere and a plugin can be pointed somewhere the operator chose.
+2. Plugin mode (`$CLAUDE_PLUGIN_ROOT` names this code root):
+   `$CLAUDE_PLUGIN_DATA`, the per-plugin directory that survives updates.
+3. Otherwise, a checkout: the code root itself.
+
+Plugin mode is detected from `CLAUDE_PLUGIN_ROOT` rather than guessed from the
+tree, because a plugin cache and a checkout contain the same files and telling
+them apart by inspection would be a heuristic where an explicit answer exists.
+
+Usage:
+  bin/heimdall-state          print the state root
+  bin/heimdall-state --mode   print "checkout" or "plugin"
+"""
+
+import os
+import sys
+from pathlib import Path
+
+HOME = Path(__file__).resolve().parent.parent
+
+
+def resolve():
+    plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT")
+    is_plugin = bool(plugin_root) and Path(plugin_root).resolve() == HOME
+
+    override = os.environ.get("HEIMDALL_STATE")
+    if override:
+        return Path(override).expanduser(), ("plugin" if is_plugin else "checkout")
+
+    if is_plugin:
+        data = os.environ.get("CLAUDE_PLUGIN_DATA")
+        if not data:
+            sys.exit("heimdall: running as a plugin but CLAUDE_PLUGIN_DATA is unset, "
+                     "and there is nowhere safe to keep a case.\n"
+                     "Set HEIMDALL_STATE to a writable directory and retry.")
+        return Path(data).expanduser(), "plugin"
+
+    return HOME, "checkout"
+
+
+def main():
+    state, mode = resolve()
+    if "--mode" in sys.argv[1:]:
+        print(mode)
+        return 0
+    try:
+        state.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        sys.exit(f"heimdall: cannot create state directory {state}: {e}")
+    print(state)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

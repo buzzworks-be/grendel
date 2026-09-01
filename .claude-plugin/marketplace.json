@@ -1,0 +1,27 @@
+{
+  "name": "grendel",
+  "owner": {
+    "name": "buzzworks-be"
+  },
+  "plugins": [
+    {
+      "name": "heimdall",
+      "source": "./",
+      "description": "Read a repository you do not touch, and write a case file about how the work in it was produced.",
+      "version": "0.5.0",
+      "author": {
+        "name": "buzzworks-be"
+      },
+      "homepage": "https://github.com/buzzworks-be/grendel",
+      "repository": "https://github.com/buzzworks-be/grendel",
+      "license": "Apache-2.0",
+      "keywords": [
+        "governance",
+        "process",
+        "audit",
+        "read-only",
+        "case-file"
+      ]
+    }
+  ]
+}
