@@ -1,27 +1,18 @@
 {
   "name": "grendel",
   "owner": {
-    "name": "buzzworks-be"
+    "name": “buzzworks.be"
   },
   "plugins": [
     {
       "name": "heimdall",
-      "source": "./",
-      "description": "Read a repository you do not touch, and write a case file about how the work in it was produced.",
+      "source": “./plugins/heimdall",
+      "description": "Heimdall is a process telemeter that assembles a case file with observations of how software was produced",
       "version": "0.6.1",
       "author": {
-        "name": "buzzworks-be"
+        "name": “Jan Van Coppenolle"
       },
-      "homepage": "https://github.com/buzzworks-be/grendel",
-      "repository": "https://github.com/buzzworks-be/grendel",
-      "license": "Apache-2.0",
-      "keywords": [
-        "governance",
-        "process",
-        "audit",
-        "read-only",
-        "case-file"
-      ]
+      "license": "Apache-2.0"
     }
   ]
 }
