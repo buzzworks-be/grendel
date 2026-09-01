@@ -1,18 +1,18 @@
 {
   "name": "grendel",
   "owner": {
-    "name": “buzzworks.be"
+    "name": "buzzworks.be"
   },
   "plugins": [
     {
       "name": "heimdall",
-      "source": “./plugins/heimdall",
       "description": "Heimdall is a process telemeter that assembles a case file with observations of how software was produced",
-      "version": "0.6.1",
       "author": {
-        "name": “Jan Van Coppenolle"
+        "name": "Jan Van Coppenolle"
       },
-      "license": "Apache-2.0"
+      "license": "Apache-2.0",
+      "version": "0.7.0",
+      "source": "./plugins/heimdall"
     }
   ]
 }
