@@ -168,7 +168,7 @@ target inside it, and Heimdall's own files must stay clean of that — run
 `"$H"/bin/check-no-leak` before committing anything while a target is attached.
 
 The case file must let someone re-derive your conclusion without rerunning you,
-and without access to Heimdall's checkout. That is why the template asks you to
+and without access to Heimdall itself. That is why the template asks you to
 quote what each violated rule requires rather than citing an id alone.
 
 ## When run as a workflow step

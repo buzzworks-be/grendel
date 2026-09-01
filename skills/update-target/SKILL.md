@@ -26,8 +26,7 @@ itself.
 
 ## Where the scripts are
 
-Heimdall runs from a checkout or from an installed plugin, and the scripts sit
-in a different place in each. Resolve it once, at the top of your shell work:
+Resolve it once, at the top of your shell work:
 
 ```sh
 H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this directory otherwise

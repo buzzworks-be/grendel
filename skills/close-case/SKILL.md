@@ -1,17 +1,16 @@
 ---
 name: close-case
-description: Detach the observed target repository and return the Heimdall checkout to its target-agnostic state, after a final leak sweep. Use when an investigation is finished, when the user asks to detach, remove, or clean up the target, or before handing the checkout to anyone else.
+description: Detach the observed target repository and return Heimdall to its target-agnostic state, after a final leak sweep. Use when an investigation is finished, when the user asks to detach, remove, or clean up the target, or before handing the machine to anyone else.
 ---
 
 # Close case
 
-Detach the target and return this checkout to the state the leak rules assume:
+Detach the target and return Heimdall to the state the leak rules assume:
 target-agnostic, and shareable because it is.
 
 ## Where the scripts are
 
-Heimdall runs from a checkout or from an installed plugin, and the scripts sit
-in a different place in each. Resolve it once, at the top of your shell work:
+Resolve it once, at the top of your shell work:
 
 ```sh
 H="${CLAUDE_PLUGIN_ROOT:-.}"    # plugin cache when installed, this directory otherwise
@@ -45,7 +44,7 @@ lives on this machine, and closing the case deals with both deliberately.
    while it still knows what to look for. A failed or inconsistent sweep
    blocks detachment (exit 7); resolve the leak first, never force past it.
 
-   It also refuses (exit 8) on a checkout that holds readings with nothing
+   It also refuses (exit 8) when readings are held with nothing
    attached. There the guard has no identifiers to search for, so it would
    exit 0 without having looked — and a close reported from that state is a
    claim about a sweep that never ran. Re-attach the target those readings
@@ -60,5 +59,5 @@ of a reading is the user's call. Default is to keep and say so.
 
 ## After
 
-The checkout is cold again: `/open-case` opens the next one. Nothing about the previous target remains outside any case files
+Heimdall is cold again: `/open-case` opens the next one. Nothing about the previous target remains outside any case files
 deliberately kept.
