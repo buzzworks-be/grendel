@@ -89,6 +89,15 @@ DOC_TOKENS = re.compile(
     r"spec|specification)\b", re.I)
 
 
+# A commit whose committer is the hosting platform is a squashed or rebased
+# branch landing: one pull request, one landing, whatever its neighbours are.
+# Grouping such commits by time welded independent pull requests merged within
+# an hour into one landing — a one-file dependency bump read as 586 files
+# across 18 areas. Kept in step with bin/reviewability.
+FORGE_COMMITTERS = {
+    "noreply@github.com", "noreply@gitlab.com", "noreply@gitea.io", "noreply@codeberg.org",
+}
+
 def git(*args, check=True):
     proc = subprocess.run([str(ROOT / "bin" / "target-git"), *args],
                           capture_output=True, text=True)
@@ -173,7 +182,7 @@ def landings(since, until, ref, act_gap_min):
     """
     out = git("log", "--first-parent", ref, "--reverse",
               f"--since={since}", f"--until={until}",
-              "--format=%H%x01%P%x01%ct")
+              "--format=%H%x01%P%x01%ct%x01%ce")
     gap = act_gap_min * 60
     units = []
     act = []          # [(sha, timestamp), ...] of consecutive direct commits
@@ -193,7 +202,7 @@ def landings(since, until, ref, act_gap_min):
     for line in out.splitlines():
         if not line.strip():
             continue
-        sha, parents, ts = line.split("\x01")
+        sha, parents, ts, ce = line.split("\x01")
         plist, ts = parents.split(), int(ts)
         if len(plist) >= 2:
             flush()
@@ -201,6 +210,10 @@ def landings(since, until, ref, act_gap_min):
             if files:
                 units.append(("merge", sha, files,
                               [("diff", "--unified=0", f"{plist[0]}..{sha}")]))
+        elif ce.strip().lower() in FORGE_COMMITTERS:
+            flush()
+            act.append((sha, ts))
+            flush()
         else:
             if act and ts - act[-1][1] > gap:
                 flush()

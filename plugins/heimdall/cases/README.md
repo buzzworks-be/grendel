@@ -123,6 +123,3 @@ it*, it reads as three different innocent shapes and a check doing its job. The
 first version is the one a hurried reader remembers, so the two figures travel
 together or the rate does not appear.
 
-## Status
-
-Seven case files have been produced on this machine, all against one target.

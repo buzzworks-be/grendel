@@ -88,6 +88,15 @@ NOISE_RE = re.compile(
     r"|\.min\.(js|css)$|\.(svg|png|jpg|jpeg|gif|ico|pdf|woff2?)$", re.I)
 
 
+# A commit whose committer is the hosting platform is a squashed or rebased
+# branch landing: one pull request, one landing, whatever its neighbours are.
+# Grouping such commits by time welded independent pull requests merged within
+# an hour into one landing — a one-file dependency bump read as 586 files
+# across 18 areas. Kept in step with bin/reviewability.
+FORGE_COMMITTERS = {
+    "noreply@github.com", "noreply@gitlab.com", "noreply@gitea.io", "noreply@codeberg.org",
+}
+
 def git(*args):
     proc = subprocess.run([str(ROOT / "bin" / "target-git"), *args],
                           capture_output=True, text=True, errors="replace")
@@ -111,7 +120,7 @@ def numstat(*args):
 def landings(since, until, ref, act_gap_min):
     out = git("log", "--first-parent", ref, "--reverse",
               f"--since={since}", f"--until={until}",
-              "--format=%H%x01%P%x01%ct%x01%s")
+              "--format=%H%x01%P%x01%ct%x01%ce%x01%s")
     gap, units, act = act_gap_min * 60, [], []
 
     def flush():
@@ -130,7 +139,7 @@ def landings(since, until, ref, act_gap_min):
     for line in out.splitlines():
         if not line.strip():
             continue
-        sha, parents, ts, subject = line.split("\x01", 3)
+        sha, parents, ts, ce, subject = line.split("\x01", 4)
         plist, ts = parents.split(), int(ts)
         if len(plist) >= 2:
             flush()
@@ -140,6 +149,10 @@ def landings(since, until, ref, act_gap_min):
                               "kind": "merge", "commits": 1,
                               "diffargs": [("diff", "--unified=0",
                                             f"{plist[0]}..{sha}")]})
+        elif ce.strip().lower() in FORGE_COMMITTERS:
+            flush()
+            act.append((sha, ts, subject))
+            flush()
         else:
             if act and ts - act[-1][1] > gap:
                 flush()

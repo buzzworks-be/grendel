@@ -265,3 +265,155 @@ rule needs a populated gradient and often has none. This signal has no such
 requirement — it reports the declaration and its coverage on any repository that
 has one, including every repository where the rule returns not-applicable, which
 so far is all of them. Report the shape; leave the scoring to R-008.
+
+---
+
+## S-8. Reversal — change that undid recent change
+
+**Measure:** the commits in a window that revert (by subject, by git's own
+"This reverts commit" trailer, or by quoting the subject of an earlier commit,
+which is all a squash landing keeps); commits that announce themselves as a
+re-land; the share of commits that name what they fix; and, for each revert,
+whether the reverted content returned later in the window and whether it
+returned byte-identical (patch-id equality). `bin/reversal` computes it,
+together with the file-level rewrite reading behind R-013.
+
+**Suggests:** whether the repository has a working correction path at all, and
+whether what it corrects stays corrected.
+
+**How it lies — and it lies in the flattering direction.** A high reversal rate
+is at least as consistent with a healthy safety net as with poor work: a team
+that detects and backs out within the hour reads worse by this count than one
+that ships the same defect and never notices. And a revert is only one shape
+of correction — fix-forward work that names nothing is indistinguishable from
+any other change, so a repository that never reverts on principle reads as one
+that never corrects. Read it as evidence that correction *happens*, never as a
+defect rate, and read the fix-reference share as a habit of the history, not a
+measure of anything about the code.
+
+**Derived rules:** R-012, from the re-land half; R-013, from the file-rewrite
+reading in the same script.
+
+---
+
+## S-9. Open-ended work — branches that never landed
+
+**Measure:** branch refs that did not land, by three tests rather than one:
+the tip is not reachable from the trunk, the branch has commits of its own,
+and its cumulative diff does not fingerprint (patch-id) to any trunk commit.
+For each: age of the last commit, when the work was begun, commits held. Plus
+the repository's **ref-retention convention** — what share of branches that
+visibly landed still hold a ref — and the trunk's landing rate per window, so
+the stale stock can be stated in windows of throughput. `bin/open-ended-work`
+computes it.
+
+**Suggests:** how much begun work is outstanding, how old it is, and whether it
+keeps being left.
+
+**How it lies — badly enough to nearly disqualify it.** *On a squash-landing
+repository every surviving branch is unreachable from the trunk whether it
+landed or not*; the naive measure calls the whole ref list abandoned. The
+patch-id test is what makes the signal readable there at all. Then the
+retention convention decides everything: where refs are removed on landing the
+survivors are outstanding work, and where they are kept the survivors are done
+mixed with abandoned and nothing in git separates them. The convention has to
+be established from the history — it is the measurement, not a preliminary —
+and on a sample of one merge it was established wrong. Also inflated by release
+and integration lines, forks and bot branches (excluded by name pattern, which
+is convention-bound); a bare clone carries only what the remote kept; and the
+most recent window is full of pull requests awaiting review, which look
+identical from git, so only refs older than a window are called stale. What it
+cannot see at all: work begun, abandoned and deleted. The stock is a floor.
+
+**A constraint from P-6.** Branch names frequently carry a contributor's
+handle. The script prints them so a reader can look; a case file must not
+quote them.
+
+**Derived rule:** R-014, conditional on the retention convention.
+
+---
+
+## S-10. Marker debt — recorded obligations that accrete
+
+**Measure:** over consecutive windows, markers added and removed (from the
+diffs), the stock at each window boundary (from the tree), and the age of what
+survives (from blame on the files holding them, capped). Word-bounded and
+case-sensitive — `TODO`, `FIXME`, `HACK`, `XXX`, `BUG` by default, configurable
+to whatever the repository actually writes. Vendored, generated and fixture
+paths excluded. `bin/marker-debt` computes it.
+
+**Suggests:** obligations the repository recorded for itself and has not
+discharged, and whether the pile is growing.
+
+**How it lies:** the level is meaningless. A repository that writes no markers
+is not cleaner, it is silent — measured: one mature history carried zero
+markers over two years, another 337 — so cross-repository comparison says
+nothing and only the repository's own trend carries anything. The trend is
+also noisy at short windows: on a small repository the stock sat flat for four
+windows and moved in two. And a marker is a *good* practice being counted
+against: the honest reading is the derivative, never the stock, and a
+repository that writes markers and works them off is doing exactly what the
+markers are for.
+
+**Derived rule:** R-015, conditional on the repository evidently using markers.
+
+---
+
+## S-11. Increment spread — declared areas per landing
+
+**Measure:** per landing, the number of distinct areas touched under the
+repository's **own** partition — its ownership file's patterns, else its
+workspace manifest, else its top-level directories, descending into a lone
+code directory until at least two code areas exist. Reported by size band
+against the repository's own distribution. Hub areas (touched by most
+landings) and accompaniment areas (tests, docs, examples, tooling) are
+excluded; landings that are renames, lockfiles, manifests, changelogs, a
+sweep (many files at a line or two each) or one edit applied everywhere are
+reported as mechanical. `bin/increment-spread` computes it.
+
+**Suggests:** whether a landing could have been reviewed as a single decision.
+
+**How it lies:** the partition is the whole measurement, and each source of it
+misleads differently. Ownership patterns declare stakes, not modules. A
+workspace manifest declares packages, which inflates spread on a fine-grained
+workspace and deflates it on a coarse one. Top-level directories on a
+single-package repository are `src`, `tests`, `docs` — accompaniment, not
+width, which the first run reported as a finding before that exclusion
+existed. The mechanical exemptions are heuristics: a dependency migration
+that touches every crate for real reasons is not a sweep and is not uniform,
+and it will be listed. And the landing unit matters more here than anywhere:
+grouping squash landings by time welded independent pull requests together,
+and a one-file dependency bump read as 586 files across 18 areas until the
+unit was fixed.
+
+**Derived rule:** R-016.
+
+---
+
+## S-12. Enforcement surface — what the repository makes mandatory by machinery
+
+**Measure:** an inventory at the ref of pipelines, hooks, lint and format
+configuration, test-runner configuration, build and type configuration,
+ownership, change templates, release and dependency automation, and written
+conventions; per category, how often it was touched in the window and ever,
+and when last; and whether file types or top-level areas that first appeared
+in the window are named anywhere in the pipeline, hook or lint configuration.
+`bin/enforcement-surface` computes it.
+
+**Suggests:** how much of the repository's discipline is written down as
+machinery rather than carried by habit — P-6's question, asked of
+configuration, which is the only way P-6 permits it to be asked — and whether
+that machinery moved while the work did.
+
+**How it lies:** presence is not execution. A workflow can be disabled at the
+platform and reads identically in git. Required checks, approval rules and
+branch protection live on the forge, invisible here. A repository may enforce
+from a shared external system and carry nothing in-tree. Hooks in `.githooks/`
+run only where each clone has been told to use them. And "touched in the
+window" measures churn in the configuration, not enforcement: on one history
+71% of landings touched the surface because an automated updater bumped hook
+versions weekly.
+
+**No rule, and none proposed.** This narrows the frame's *verification
+blindness* gap — the gate chain is at least visible — without closing it, and
+the residue is the same forge boundary R-001 lives with.

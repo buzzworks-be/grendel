@@ -28,6 +28,15 @@ outcomes:               # every rule that existed at principles_sha, no exceptio
   R-005: violation      # because silence about a rule reads as coverage of it.
   R-006: cannot-tell    # Draft rules are observation at most, never violation.
   R-007: pass
+  R-008: not-applicable
+  R-009: observation
+  R-010: not-reported
+  R-011: observation
+  R-012: not-reported
+  R-013: not-reported
+  R-014: not-applicable
+  R-015: not-applicable
+  R-016: not-reported
 ---
 
 # Case file — <range>

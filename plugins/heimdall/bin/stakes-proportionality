@@ -279,8 +279,6 @@ def main():
         print("  accident. Report the declaration and its shape; score nothing.")
         return 0
 
-    d_med = statistics.median(r["per_line"] for r in declared)
-    u_med = statistics.median(r["per_line"] for r in undeclared)
     h_med = statistics.median(r["per_line"] for r in heavier)
     l_med = statistics.median(r["per_line"] for r in lighter)
     print(f"  median review window per line, more heavily owned: {h_med:8.1f}s")

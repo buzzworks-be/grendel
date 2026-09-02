@@ -35,13 +35,13 @@ it.** Every principle below is a facet of that.
 > **Status: candidate.** These are stated, not settled.
 >
 > P-1 to P-4 each have at least one **active** derived rule, though they are not
-> equally strong — see the note on rule strength in `README.md`. P-5 and P-6
-> each have one rule in **draft** (R-008, R-009): their thresholds were chosen
-> rather than calibrated, so they may be raised in a case file as observations
-> and never as violations, as do **P-7** (R-010) and **P-8** (R-011). That limit
-> is real, not a formality: a draft rule must never be cited as though an
-> increment failed it. Every principle has at least one derived rule; four of
-> them have only a draft.
+> equally strong — see the note on rule strength in `README.md`. P-5 to P-11
+> have only **draft** rules (R-008 to R-016): their thresholds were chosen or
+> swept on a handful of histories rather than calibrated, so they may be raised
+> in a case file as observations and never as violations. That limit is real,
+> not a formality: a draft rule must never be cited as though an increment
+> failed it. Every principle has at least one derived rule; seven of them have
+> only a draft.
 
 ---
 
@@ -330,3 +330,131 @@ in a repository that has not established the practice.
 
 **Derived rules:** R-011 (substantial implementation arrives with its
 verification).
+
+---
+
+## P-9. A process that never revisits does not correct
+
+Every principle above counts what is *present* in a range. None can see a
+range that *removed* something. A window whose base is the very change that
+fixed the repository's largest measured defect reads worse than one that
+merely avoided new ones, because the tables show residue and never direction
+of travel. That is a reporting artifact, and underneath it is a process
+property: whether landed work is ever looked at again, and whether the
+repository shows the shape of correction — a revert, a fix that names what it
+fixed, rework concentrated where something went wrong — or only accretion.
+
+The concern is not that correction happens. Correction happening is the
+healthy shape, and a high rate of it is at least as consistent with a working
+safety net as with poor work; a team that detects and backs out in an hour
+looks worse by any naive count than one that ships the same defect and never
+notices. The concern is the two shapes that show nothing was learned: work
+backed out and then returned unchanged, and a file replaced and replaced again
+inside one window because nobody understood it the first time.
+
+Stated with a limit. Only some correction is visible: a `git revert` announces
+itself, a fix that references its subject can be followed, but fix-forward
+work that names nothing is indistinguishable from any other change, so a
+repository that never reverts on principle reads as one that never corrects.
+Every measure under this principle bounds correction from below.
+
+**Rules out:** reading a clean window as health when the window merely added;
+reading a window full of repair as unhealthy when repair is what it was; and
+crediting a process for the absence of new defects when it has never shown it
+can remove one.
+
+**Derived rules:** R-012 (reverted work must not re-land unchanged) and R-013
+(a file majority-replaced repeatedly in one window did not settle) — both
+**draft**. R-012 is the harder fact: patch-id equality between what was
+reverted and what came back, the same diff line for line. R-013 is stated
+narrowly on purpose, because its ancestor — the retired *rework commit ratio*
+— counted any touch of a previously-touched file and saturated at 84–98% on
+every history tried; `bin/reversal` prints both figures side by side so a
+reader can see that the narrower one discriminates where the old one did not.
+
+---
+
+## P-10. Work begun is work owed
+
+Every principle above examines what **landed**. Nothing sees what was
+*started*. A repository opening branches faster than it closes them, or
+writing itself obligations faster than it discharges them, is producing
+commitments faster than it retires them — the unifying concern applied to
+intentions rather than to code — and a clean case file is entirely compatible
+with the pile, because nothing in the frame looks at it.
+
+Two carriers are visible from git, and they are weak in different ways. A
+branch that never landed is a piece of begun work, but only where the
+repository removes refs on landing; where it keeps them, survivors are
+done-and-kept mixed with abandoned and nothing separates them, and where it
+squashes, no surviving branch is reachable from the trunk whether it landed or
+not. A marker in the tree — `TODO`, `FIXME`, whatever the repository writes —
+is a recorded obligation, but its level says nothing: a repository that writes
+none is not cleaner, it is silent. Only the repository's own trend carries
+anything.
+
+What neither can see is the likeliest case: work begun, abandoned, and deleted.
+Both carriers are floors.
+
+**Rules out:** treating merged work as the whole of the work; reading
+throughput as progress without asking what was left behind to achieve it;
+comparing one repository's obligations against another's; and mistaking a
+repository that records no obligations for one that has none.
+
+**Derived rules:** R-014 (unlanded work must not accumulate across consecutive
+windows) and R-015 (recorded obligations must be discharged, not only
+accumulated) — both **draft**, both **conditional** in the way R-003 and R-011
+are. R-014 establishes the repository's ref-retention convention from the
+landings it can see and stands down where refs are kept; R-015 establishes
+that the repository uses markers at all and stands down where it does not. On
+the three histories they were built against, each stood down once for the
+right reason, which is the behaviour that matters most in a conditional rule.
+
+---
+
+## P-11. An increment must be separable to be reviewable
+
+R-001 and R-004 are necessary-condition tests about **time**: the interval in
+which to read did not exist. This is a different claim, and orthogonal to
+them: that the *unit* could not be reviewed as one decision however much time
+there was. A change reaching into many unrelated areas at once is several
+decisions wearing one identifier; a reader must hold all of them, or approve
+the lot on faith. Machine production makes wide, simultaneous, plausible
+changes cheap in a way hand-work never did, and a small, slow, wide change
+troubles nothing else in this frame.
+
+The hard constraint, in the shape P-5 uses. **The partition must be the
+repository's own** — its ownership file's patterns, its workspace manifest,
+its directory layout. Areas Heimdall inferred from reading the code would be
+an opinion about someone else's architecture, which is the line this
+instrument does not cross. Where a repository declares no partition that can
+be read, this principle has nothing to say.
+
+Two things that look like width and are not. A change that arrives with its
+tests and its documentation reaches into several top-level directories, and
+that is R-003 and R-011 being satisfied, not spread; test, documentation and
+tooling areas never count. And a change that is one edit applied everywhere
+— a rename, a lint fix, a toolchain migration, a version bump — is wide by
+construction and reviewable by reading the rule once; the first run on a
+package workspace put four of those at the top of its list.
+
+This principle has a property most of the frame lacks. `README.md` says to
+prefer the framing whose cheapest evasion is the desired behaviour, and
+usually that framing is unavailable. Here it is not: the cheapest way to
+clear a rule under this principle is to split the change, which is the
+practice the rule was written for.
+
+**Rules out:** treating a merge as one decision because it is one commit;
+judging width against an absolute rather than against the repository's own
+distribution at that size; counting accompaniment as spread; and inferring
+which areas are related in a repository that has not said.
+
+**Derived rules:** R-016 (an increment must not span more declared areas than
+the repository's own norm for its size) — **draft**, and **advisory**. Its
+first criterion was a percentile of the repository's own distribution, which
+flags a fixed share of any distribution and is a finding machine rather than a
+test; its second collapsed onto the absolute floor wherever the median was one.
+It now requires all three of an absolute floor, a multiple of the band's
+median, and the band's 90th percentile, and the survivors on a 41-area
+workspace were the landings a reader would want listed — including one whose
+subject called itself work in progress.

@@ -3,12 +3,11 @@
 # Update the target: fetch what has landed in the observed repository since the
 # last look, and report the delta.
 #
-# The mirror of bin/update-instrument, and deliberately a separate verb from it.
-# The two move different things, from remotes with different trust, on different
-# schedules: the instrument must be frozen for the length of a case, while the
-# target legitimately moves between increments. Bundling them would make an
-# untrusted fetch fail together with a trusted self-update and report as one
-# event.
+# The only fetch a case makes, and it is from an untrusted remote. Nothing of
+# Heimdall's moves here: the frame of reference must stay frozen for the length
+# of a case, while the target legitimately moves between increments. Bundling
+# the two would make an untrusted fetch fail together with something trusted
+# and report as one event.
 #
 # The fetch itself is delegated to attach-target.sh so there is exactly one
 # implementation of "refresh" — including the push-disable belt and the

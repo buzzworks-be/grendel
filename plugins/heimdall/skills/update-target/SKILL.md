@@ -6,15 +6,12 @@ description: Fetch what has landed in the observed target since the last look, a
 # Update target
 
 The target moves while a case is open. This brings the clone level with it and
-reports what changed — the mirror of `/roll-call`, which does the same for the
-instrument.
+reports what changed.
 
-They are deliberately separate actions. `/roll-call` pulls from Heimdall's own
-remote, between cases only, because the frame of reference must not move while
-it is being applied. This pulls from the *observed* repository's remote, during
-a case, as often as the work there warrants. Different trust, different
-schedule; bundling them would make an untrusted fetch fail together with a
-trusted self-update and report as one event.
+It fetches from the *observed* repository's remote — untrusted, during a case,
+as often as the work there warrants. Nothing else is fetched here, and nothing
+about Heimdall changes: the frame of reference must not move while it is being
+applied, and a case file in progress keeps the identifier it pinned.
 
 ```sh
 "$H"/bin/update-target
