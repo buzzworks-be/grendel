@@ -127,6 +127,33 @@ if [ ! -f "$META" ] || [ ! -d ".heimdall/target.git" ]; then
   exit 6
 fi
 
+# In plugin mode there is no Heimdall repository: no tracked files, no commit
+# messages, no refs. The second rule's original surface is simply absent, and
+# saying so is better than passing silently — a guard that reports "clean"
+# without having looked is the failure this whole file exists to prevent.
+if [ "$MODE" = "plugin" ]; then
+  echo "heimdall: plugin mode — no Heimdall repository is present, so the" >&2
+  echo "tracked-file, commit-message and ref sweeps have nothing to sweep." >&2
+  echo "They are NOT APPLICABLE here, not passing." >&2
+
+  # What does still apply: case files must not sit where something could commit
+  # them. A state root inside somebody's project is the plugin-mode equivalent
+  # of the leak the tracked-file sweep catches in a checkout.
+  if git -C "$STATE" rev-parse --show-toplevel >/dev/null 2>&1; then
+    top="$(git -C "$STATE" rev-parse --show-toplevel)"
+    echo >&2
+    echo "heimdall: REFUSING — the state root is inside a git repository:" >&2
+    echo "  $top" >&2
+    echo "Case files cite the target. Anything under a working tree can be" >&2
+    echo "committed by someone who does not know that. Point HEIMDALL_STATE" >&2
+    echo "somewhere outside a repository and re-attach." >&2
+    exit 5
+  fi
+  echo "heimdall: state root is outside any git repository — nothing can" >&2
+  echo "commit a case file by accident." >&2
+  exit 0
+fi
+
 # Needles: the identifiers to search for, derived at runtime from the gitignored
 # metadata. Two sets come out of one pass — exact identifiers for file content
 # and commit messages, and a looser token set for ref names, because a harness
@@ -144,8 +171,16 @@ SELF_ORIGIN="$(git -C "$ROOT" remote get-url origin 2>/dev/null || true)"
 # run at all, and detach-target.sh, which gates on it, could not close a
 # case. It fails closed rather than open, which is the right direction,
 # but a guard that cannot run is not a guard.
-DERIVED=()
-while IFS= read -r _line; do DERIVED+=("$_line"); done < <(python3 - "$META" "$SELF_ORIGIN" <<'NEEDLEPY'
+# And no heredoc inside a process substitution: bash 3.2 mis-parses that
+# construct — the heredoc body is read as the substitution's command list — so
+# on macOS the derivation died with a syntax error before the sweep ran. Third
+# defect of that family. The program goes to a temp file through a plain
+# heredoc, its output to a second, and the read is a plain redirect: nothing
+# here that bash 3.2 has ever mishandled.
+NEEDLE_PROG="$(mktemp "${TMPDIR:-/tmp}/heimdall-needles.XXXXXX")"
+NEEDLE_OUT="$(mktemp "${TMPDIR:-/tmp}/heimdall-needles.XXXXXX")"
+trap 'rm -f "$NEEDLE_PROG" "$NEEDLE_OUT"' EXIT
+cat > "$NEEDLE_PROG" <<'NEEDLEPY'
 import json, re, sys
 
 url = json.load(open(sys.argv[1]))["url"].rstrip("/")
@@ -238,7 +273,9 @@ for n in sorted(tokens):
 for n in sorted(dropped):
     print("D\t" + n)
 NEEDLEPY
-)
+python3 "$NEEDLE_PROG" "$META" "$SELF_ORIGIN" > "$NEEDLE_OUT"
+DERIVED=()
+while IFS= read -r _line; do DERIVED+=("$_line"); done < "$NEEDLE_OUT"
 
 NEEDLES=()
 REF_NEEDLES=()
@@ -276,33 +313,6 @@ if [ "${#NEEDLES[@]}" -eq 0 ]; then
 fi
 
 fail=0
-
-# In plugin mode there is no Heimdall repository: no tracked files, no commit
-# messages, no refs. The second rule's original surface is simply absent, and
-# saying so is better than passing silently — a guard that reports "clean"
-# without having looked is the failure this whole file exists to prevent.
-if [ "$MODE" = "plugin" ]; then
-  echo "heimdall: plugin mode — no Heimdall repository is present, so the" >&2
-  echo "tracked-file, commit-message and ref sweeps have nothing to sweep." >&2
-  echo "They are NOT APPLICABLE here, not passing." >&2
-
-  # What does still apply: case files must not sit where something could commit
-  # them. A state root inside somebody's project is the plugin-mode equivalent
-  # of the leak the tracked-file sweep catches in a checkout.
-  if git -C "$STATE" rev-parse --show-toplevel >/dev/null 2>&1; then
-    top="$(git -C "$STATE" rev-parse --show-toplevel)"
-    echo >&2
-    echo "heimdall: REFUSING — the state root is inside a git repository:" >&2
-    echo "  $top" >&2
-    echo "Case files cite the target. Anything under a working tree can be" >&2
-    echo "committed by someone who does not know that. Point HEIMDALL_STATE" >&2
-    echo "somewhere outside a repository and re-attach." >&2
-    exit 5
-  fi
-  echo "heimdall: state root is outside any git repository — nothing can" >&2
-  echo "commit a case file by accident." >&2
-  exit 0
-fi
 
 # 1. Tracked files. Untracked ones cannot be pushed; ignored ones are the point.
 for needle in "${NEEDLES[@]}"; do
