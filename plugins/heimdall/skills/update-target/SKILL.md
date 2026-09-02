@@ -43,7 +43,11 @@ skill needing to know where it is running from.
   previous head.
 
 If nothing landed it says so plainly. That is a real answer to "has anything
-changed", not a failure.
+changed **in the target**", not a failure — and not an answer about the
+instrument. A reading is identified by its range *and* its principles pin.
+If Heimdall was updated since the last case file on this range, the same
+range under the new pin is a new reading, and "nothing landed" is no reason
+to skip it; `/profile` says how to write it up as superseding the earlier one.
 
 ## The pinning hazard, which is yours to hold
 

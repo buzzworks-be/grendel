@@ -57,6 +57,16 @@ Heimdall itself.
    This refuses (exit 4) if `principles/` has uncommitted changes, and prints
    the sha to stamp into the case file. If it refuses, stop and say why — do not
    work around it by committing the rules yourself mid-assessment.
+
+   **A reading is a range under a pin, and both halves decide whether there is
+   work to do.** Compare the pin against any earlier case file on this range
+   (`"$H"/bin/case-strip` lists them with their `principles_sha`). Same range,
+   different pin — because Heimdall was updated between the two — is a **new
+   reading**: the rules moved, the findings may move with them, and the case
+   file is written to supersede the earlier one (see *Write the case file*).
+   Same range, same pin, same head is a repeat, and saying so is the honest
+   answer. "Nothing landed in the target" is never by itself a reason to stop:
+   `/update-target` answers about the target, not about the instrument.
 3. Read `principles/PRINCIPLES.md` and every **active** rule in
    `principles/rules/`. Rules with `status: draft` are not enforceable — you may
    note them as observations, never as violations.
@@ -158,9 +168,11 @@ assessed again under amended rules is a different case file, and an id without t
 principles sha would overwrite the earlier one instead of standing beside it.
 
 Fill the frontmatter completely; a receiving agent routes on it. Where this
-case file re-assesses a range already examined, set `supersedes` to the earlier
-file's name and say near the top what changed in the rules and which findings
-moved as a result. A reader comparing the two should not have to diff them.
+case file re-assesses a range already examined — typically because the pin
+moved — set `supersedes` to the earlier file's name and say near the top what
+changed in the rules (the two pins, and which rules were added, amended or
+retired between them) and which findings moved as a result. A reader comparing
+the two should not have to diff them.
 
 Then **hand it over**: send the file to the user (`SendUserFile`), or pass its
 path to whoever asked. Do not commit it. It is gitignored because it carries the
