@@ -41,6 +41,12 @@ outcomes:               # every rule that existed at principles_sha, no exceptio
   R-018: not-applicable
   R-019: not-applicable
   R-020: not-reported
+  R-021: cannot-tell
+  R-022: cannot-tell
+  R-023: cannot-tell
+  R-024: cannot-tell
+  R-025: cannot-tell
+  R-026: cannot-tell
 ---
 
 # Case file — <range>

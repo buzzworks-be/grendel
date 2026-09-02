@@ -19,6 +19,11 @@ Three readings, in order of how much they can claim:
         nothing learned. A re-land that differs is reported separately as an
         observation, never as a finding.
 
+  R-026 a re-land after a revert, where the repository ships tests with its
+        code, must carry verification the first attempt lacked. The first
+        attempt was backed out; the second is the one that learned, or did
+        not. Conditional on the repository's test practice, as R-011 is.
+
   R-013 files whose content was majority-replaced by several distinct landings
         inside one window. Narrower on purpose than the retired "rework commit
         ratio", which counted any touch of a previously-touched file and
@@ -235,7 +240,11 @@ def main():
             continue
         original_subject = PR_SUFFIX_RE.sub("", by_sha.get(target_sha, {}).get(
             "subject", tg("log", "-1", "--format=%s", target_sha).strip()))
-        later = [c for c in cs if c["ts"] > rc["ts"] and c["sha"] != rc["sha"]]
+        # "Later" is log order, not timestamp: a re-land committed in the same
+        # second as its revert (a scripted revert-and-retry, or a fixture) has
+        # an equal timestamp and was invisible to a time comparison.
+        idx = next(i for i, c in enumerate(cs) if c["sha"] == rc["sha"])
+        later = cs[idx + 1:]
         exact = None
         for c in later:
             if len(c["parents"]) >= 2:
@@ -269,6 +278,54 @@ def main():
     for rc, tsha, again, subj in observations_012:
         print(f"  observation: {tsha[:12]} reverted, then re-landed CHANGED as "
               f"{again['sha'][:12]} — \"{subj[:60]}\". The healthy shape; not a finding.")
+
+    # ---- R-026: the re-land carries what the first attempt lacked ------------
+    def test_and_code(sha):
+        test = code = 0
+        for row in tg("show", "--numstat", "-M", "--format=", sha).splitlines():
+            c = row.split("\t")
+            if len(c) == 3 and c[0].isdigit() and c[1].isdigit():
+                k = kind(c[2])
+                if k == "test":
+                    test += int(c[0]) + int(c[1])
+                elif k == "code":
+                    code += int(c[0]) + int(c[1])
+        return test, code
+
+    pairs = [(tsha, again) for _, tsha, again, _ in findings_012] + \
+            [(tsha, again) for _, tsha, again, _ in observations_012]
+    print()
+    if not pairs:
+        print("R-026: no re-land after a revert in the window; nothing to ask.")
+    else:
+        # The convention, as R-011 establishes it: share of substantial trunk
+        # landings in the window that carry a test change.
+        subst = [c for c in cs if c["landed"] and len(c["parents"]) < 2]
+        rates = []
+        for c in subst:
+            t, k = test_and_code(c["sha"])
+            if k >= 25:
+                rates.append(t > 0)
+        conv = (sum(rates) / len(rates)) if rates else 0.0
+        if len(rates) < 10 or conv < 0.5:
+            print(f"R-026: NOT APPLICABLE — tests accompany {conv:.0%} of substantial landings here "
+                  f"({len(rates)} measured); the repository does not evidently ship them with code.")
+        else:
+            print(f"R-026: convention — tests accompany {conv:.0%} of {len(rates)} substantial landings.")
+            cands = []
+            for tsha, again in pairs:
+                t0, k0 = test_and_code(tsha); t1, k1 = test_and_code(again["sha"])
+                learned = t1 > 0 and t0 == 0
+                print(f"  {tsha[:12]} (tests {t0}, code {k0}) → re-land {again['sha'][:12]} (tests {t1}, code {k1})"
+                      + ("  — verification added" if learned else ""))
+                if k1 >= 25 and t1 == 0:
+                    cands.append((tsha, again, k1))
+            if cands:
+                print(f"R-026: CANDIDATE FINDING — {len(cands)} re-land(s) of reverted work still carry no test change,")
+                print("  in a repository that normally ships one. A revert taken for reasons a test could")
+                print("  not have caught — timing, a dependency, a flaky pipeline — is R-026's first exemption.")
+            else:
+                print("R-026: no finding — every re-land carried verification.")
 
     # ---- R-013: files majority-replaced by several distinct landings -------
     units = landings(ref, a.since, a.until, a.act_gap)

@@ -504,3 +504,39 @@ the rule describes.
 
 **Derived rules:** R-019, from the typed half, conditional; R-020, from the
 trivial-claim half.
+
+---
+
+## S-16. Care over time — the repository's own rigor as a series
+
+**Measure:** the landing unit over N consecutive windows, each landing with
+its size, test and reasoning accompaniment, review interval where it is a
+merge, and paths. From that one series: care per window and per window
+ranked by throughput; the rank correlation of size and review interval per
+window; care inside and outside the windows around each kind of declared
+risk moment — release tags with a run-up scaled to the tag cadence, major
+versions, reverts, breaking markers; care per area of the repository's
+partition in each half of the span; and, from the whole history rather than
+the span, care on the paths an ownership declaration named, ninety days on
+each side of it. `bin/care-over-time` computes it.
+
+**Suggests:** whether the repository's rigor tracks its risk and resists its
+pace, in its own terms and over its own time.
+
+**How it lies:** it needs history. Below eight windows with ten substantial
+landings each, nothing here is a trend; two of four calibration histories
+were too quiet, and a young repository will always be. Windows are calendar
+slices, and a documented convention change inside the span turns a trend
+into two processes. Risk is only what was declared, and a declaration can
+be the normal state — a fixed fourteen-day release window covered 84% of
+one history's landings, and 282 breaking labels in two years made
+"breaking" ordinary on another — so each kind is compared separately and a
+saturated kind is set aside. The review interval exists only on merge
+commits. And the ownership experiment needs a declaration broad enough that
+ten landings touched its paths on each side, which four narrow declarations
+on one history did not give it. Measured, on a busy application over two
+years: tests 95% in the first quarter and 53% in the last, fastest windows
+twelve points under the slowest, review interval uncorrelated with size in
+every window.
+
+**Derived rules:** R-021, R-022, R-023 (P-14); R-024, R-025 (P-15).

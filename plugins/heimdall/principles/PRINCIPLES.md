@@ -36,12 +36,12 @@ it.** Every principle below is a facet of that.
 >
 > P-1 to P-4 each have at least one **active** derived rule, though they are not
 > equally strong — see the note on rule strength in `README.md`. P-5 to P-13
-> have only **draft** rules (R-008 to R-020): their thresholds were chosen or
+> have only **draft** rules (R-008 to R-026): their thresholds were chosen or
 > swept on a handful of histories rather than calibrated, so they may be raised
 > in a case file as observations and never as violations. That limit is real,
 > not a formality: a draft rule must never be cited as though an increment
-> failed it. Every principle has at least one derived rule; nine of them have
-> only a draft.
+> failed it. Every principle has at least one derived rule; eleven of them
+> have only a draft.
 
 ---
 
@@ -363,8 +363,9 @@ reading a window full of repair as unhealthy when repair is what it was; and
 crediting a process for the absence of new defects when it has never shown it
 can remove one.
 
-**Derived rules:** R-012 (reverted work must not re-land unchanged) and R-013
-(a file majority-replaced repeatedly in one window did not settle) — both
+**Derived rules:** R-012 (reverted work must not re-land unchanged), R-013
+(a file majority-replaced repeatedly in one window did not settle) and R-026
+(re-landed work carries the verification the first attempt lacked) — all
 **draft**. R-012 is the harder fact: patch-id equality between what was
 reverted and what came back, the same diff line for line. R-013 is stated
 narrowly on purpose, because its ancestor — the retired *rework commit ratio*
@@ -534,3 +535,81 @@ deprecation markers at all; on four histories it stood down on one, read a
 median notice of 225 days on a library, a year on an application, and 44
 days on a workspace, and its first run on each history put a false positive
 at the top of its list that became a mechanical exclusion.
+
+---
+
+## P-14. Care must rise where the repository says risk rose
+
+P-5 reads care against the stakes a repository declares across its paths.
+This reads it across the repository's *time*. A repository declares risk
+moments in its own history and every one is in git: the run-up to a release
+tag, a major version, the fortnight after a revert, a change it labels
+breaking, the commit that extended its ownership file. The care it normally
+shows — tests with code, the interval a branch waits before landing, reasoning
+with code — should be at least its baseline in those moments, and the anomaly
+worth a reader's attention is care *falling* exactly there.
+
+Stated with P-5's constraint intact: **risk is only what the repository
+declared.** Tags, version numbers, reverts, breaking-change markers,
+ownership patterns. Nothing inferred from the code, which would be Heimdall
+holding an opinion about someone else's architecture. A repository that
+declares nothing has no risk moments to read, and that is honest silence.
+
+And with a limit the runs made plain: a declaration can be the repository's
+normal state. A repository that tags every twelve days has no run-up
+distinct from the rest of its life; one that labels a change breaking every
+other day has made breaking ordinary. Every rule under this principle sets a
+saturated declaration aside rather than comparing it against the leftover.
+
+**Rules out:** treating a declaration of stakes as discharged by its
+presence; reading a fast-moving process as careful because each window
+looks like the last; and inferring where risk sits in a repository that has
+not said.
+
+**Derived rules:** R-021 (a declaration of stakes must move the care it
+declares — the natural experiment an ownership change hands over free),
+R-022 (care in a declared risk window is not below the baseline, kind by
+kind), R-023 (the review window must keep growing with change size, on
+merge-commit histories) — all **draft**. On four real histories none
+engaged; R-021 populated only on fixtures built for it, R-023 read one
+merge history as a flat process from the start and said so as an
+observation.
+
+---
+
+## P-15. Rigor must not erode as pace rises
+
+P-1 says work that outruns digestion is not done. This says the trajectory
+matters: a repository whose test rate and review windows drift down over
+the quarters while its throughput drifts up has traded rigor for pace, and
+no single window shows it, because each window is only slightly worse than
+the last. Every window-based reading in the frame compares a window against
+the one before; a slow erosion is invisible to that by construction.
+
+The measures are the frame's own — tests with code, the review interval,
+reasoning with code — and the comparison is the repository against itself
+over its own time, in ranks a reader can recompute by hand: its fastest
+windows against its slowest, its earlier half against its later, each of its
+declared areas against the whole. Nothing here is a fitted baseline or a
+score; a "learned normal" would be exactly the opinion about someone else's
+repository this instrument refuses to hold.
+
+Two things the runs said about this principle. It needs **long** histories
+— eight windows with ten substantial landings each is a floor — so on a
+young or quiet repository every rule under it says *cannot tell*, and the
+rule texts make that outcome look ordinary rather than like a gap. And a
+**regime change** cuts it: a documented convention switch inside the span
+produces a trend that is two processes, and the split the signal catalogue
+already requires becomes mandatory.
+
+**Rules out:** reading a steady repository-wide rate as care everywhere;
+mistaking each window's small decline for noise; and comparing a repository
+against anything but itself.
+
+**Derived rules:** R-024 (care in the fastest windows is not below the
+slowest, with the earlier-half against later-half drift as an observation)
+and R-025 (care must not quietly withdraw from an area) — both **draft**.
+On the two histories with enough landings, one showed a twelve-point drop
+in its fastest windows and a drift from 77% to 71% over two years — under
+the bar, and the drift is printed so a reader sees it — and one showed the
+opposite, its fastest windows the best tested and care rising over time.
