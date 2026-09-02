@@ -67,6 +67,49 @@ scan_tracked() {
 if [ "${1:-}" = "--self-test" ]; then
   tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' EXIT
+
+  # The guard that runs depends on where Heimdall is installed, and so must
+  # the test of it. Installed as a plugin there are no tracked files, commit
+  # messages or refs to sweep; what the guard does there is refuse a state
+  # root that sits inside a git repository. Until this branch existed the
+  # self-test built a checkout fixture — whose state root IS a git repository
+  # — and from every plugin install reported the guard as failing, when the
+  # guard was refusing exactly what it should. Latent from the first plugin
+  # publish; found by running the shipped copy's own self-test.
+  if [ "$MODE" = "plugin" ]; then
+    fixture() {  # $1: directory to attach into
+      mkdir -p "$1/.heimdall/target.git"
+      printf '{"url":"https://github.com/acmewidgets/frobnicator.git",' > "$1/.heimdall/target.json"
+      printf '"defaultBranch":"main","headSha":"%040d"}\n' 0 >> "$1/.heimdall/target.json"
+    }
+    mkdir -p "$tmp/outside" "$tmp/inside"
+    fixture "$tmp/outside"
+    git -C "$tmp/inside" init -q
+    fixture "$tmp/inside"
+    rc=0
+    set +e
+    HEIMDALL_STATE="$tmp/outside" "$SELF" >/dev/null 2>&1
+    outside_exit=$?
+    HEIMDALL_STATE="$tmp/inside" "$SELF" >/dev/null 2>&1
+    inside_exit=$?
+    set -e
+    if [ "$inside_exit" -ne 5 ]; then
+      echo "heimdall: SELF-TEST FAILED — a state root inside a git repository" >&2
+      echo "was not refused (exit $inside_exit, expected 5). Failing OPEN." >&2
+      rc=1
+    fi
+    if [ "$outside_exit" -ne 0 ]; then
+      echo "heimdall: SELF-TEST FAILED — a state root outside any repository" >&2
+      echo "was reported as leaking (exit $outside_exit, expected 0)." >&2
+      rc=1
+    fi
+    if [ "$rc" -eq 0 ]; then
+      echo "heimdall: self-test passed (plugin) — the guard refuses a state root" >&2
+      echo "inside a git repository and passes one outside." >&2
+    fi
+    exit "$rc"
+  fi
+
   git -C "$tmp" init -q
   git -C "$tmp" config user.email heimdall@invalid
   git -C "$tmp" config user.name heimdall
