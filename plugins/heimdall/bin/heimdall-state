@@ -18,13 +18,20 @@ Resolution, in order:
 
 1. `$HEIMDALL_STATE` if set — always wins, so a checkout can be pointed
    elsewhere and a plugin can be pointed somewhere the operator chose.
-2. Plugin mode (`$CLAUDE_PLUGIN_ROOT` names this code root):
-   `$CLAUDE_PLUGIN_DATA`, the per-plugin directory that survives updates.
+2. Installed as a plugin: `$CLAUDE_PLUGIN_DATA`, the per-plugin directory
+   that survives updates.
 3. Otherwise, a checkout: the code root itself.
 
-Plugin mode is detected from `CLAUDE_PLUGIN_ROOT` rather than guessed from the
-tree, because a plugin cache and a checkout contain the same files and telling
-them apart by inspection would be a heuristic where an explicit answer exists.
+Whether this is a plugin is answered two ways, either sufficing. The explicit
+one: `$CLAUDE_PLUGIN_ROOT` names this code root. The structural one: this
+code root is not the top of a git work tree — a plugin cache has no git
+history of its own, and where it sits inside some unrelated repository the
+top level is that repository, not this directory. The first version read only
+the environment variable, and a host that ran the plugin without setting it
+left the cache reading as a checkout, at which point bin/principles-ref ran
+git where there was none and exited 128 instead of falling back to the plugin
+version pin built for exactly that case. Reported from a session that had
+HEIMDALL_STATE set and CLAUDE_PLUGIN_ROOT not.
 
 Usage:
   bin/heimdall-state          print the state root
@@ -32,15 +39,29 @@ Usage:
 """
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 
 HOME = Path(__file__).resolve().parent.parent
 
 
-def resolve():
+def is_plugin_install():
     plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT")
-    is_plugin = bool(plugin_root) and Path(plugin_root).resolve() == HOME
+    if plugin_root and Path(plugin_root).resolve() == HOME:
+        return True
+    try:
+        top = subprocess.run(["git", "-C", str(HOME), "rev-parse", "--show-toplevel"],
+                             capture_output=True, text=True)
+    except OSError:
+        return True                      # no git at all: certainly not a checkout
+    if top.returncode != 0:
+        return True                      # not inside any work tree
+    return Path(top.stdout.strip()).resolve() != HOME
+
+
+def resolve():
+    is_plugin = is_plugin_install()
 
     override = os.environ.get("HEIMDALL_STATE")
     if override:

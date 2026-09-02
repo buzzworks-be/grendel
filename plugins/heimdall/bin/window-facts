@@ -35,18 +35,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import kind  # noqa: E402
 SEP = "\x1e"  # field separator
 REC = "\x1d"  # record separator
 
-TEST_RE = re.compile(
-    r"(^|/)tests?/|(^|/)spec/|_test\.|\.test\.|_spec\.|\.spec\.|(^|/)conftest\.py$",
-    re.I,
-)
-DOC_RE = re.compile(
-    r"(^|/)docs?/|(^|/)adrs?/|(^|/)rfcs?/|\.md$|\.rst$|\.adoc$|"
-    r"requirements?|specification|design[-_]?doc",
-    re.I,
-)
 REVERT_RE = re.compile(r"^revert\b", re.I)
 FIXUP_RE = re.compile(
     r"^(fixup!|squash!|amend!)|^(wip|oops|typo|nit|whoops)\b|"
@@ -115,11 +108,9 @@ def resolve(expr):
 
 
 def classify(path):
-    if TEST_RE.search(path):
-        return "test"
-    if DOC_RE.search(path):
-        return "doc"
-    return "code"
+    # The shared definition; "noise" is a fourth kind and is simply not one of
+    # the three the discipline signals read.
+    return kind(path)
 
 
 def collect(since, until, ref, all_refs):

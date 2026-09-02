@@ -47,13 +47,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import NOISE_RE, TEST_RE, DOC_RE, FORGE_COMMITTERS  # noqa: E402
 
-NOISE_RE = re.compile(
-    r"(^|/)(vendor|node_modules|third_party|dist|build|generated|__snapshots__|snapshots?|fixtures?)(/)"
-    r"|(lock|\.lock)$|package-lock\.json$|yarn\.lock$|go\.sum$|Cargo\.lock$"
-    r"|\.min\.(js|css)$|\.(svg|png|jpg|jpeg|gif|ico|pdf|woff2?|snap)$", re.I)
-DOC_RE = re.compile(r"(^|/)(docs?|adr|adrs|decisions|rfcs?|design)(/|$)"
-                    r"|\.(md|rst|adoc|txt)$", re.I)
 # An area that IS the repository's tests, docs or examples is accompaniment,
 # not spread: a change that lands with its tests and its docs is one decision
 # (it is R-003 and R-011 being satisfied). On a single-package repository the
@@ -63,9 +60,6 @@ DOC_RE = re.compile(r"(^|/)(docs?|adr|adrs|decisions|rfcs?|design)(/|$)"
 ACCOMPANIMENT_RE = re.compile(
     r"^(tests?|__tests__|testing|spec|specs|e2e|docs?|doc|documentation|examples?|"
     r"samples?|benchmarks?|benches|\.github|\.gitlab|\.circleci|scripts?|tools?|ci)$", re.I)
-TEST_RE = re.compile(
-    r"(^|/)(tests?|__tests__|spec|specs|e2e|testing|benches|benchmarks?)(/)"
-    r"|(^|/)test_[^/]+$|_test\.[^/.]+$|\.test\.[^/.]+$|\.spec\.[^/.]+$", re.I)
 CONFIG_RE = re.compile(r"(^|/)\.[^/]+$|\.(json|ya?ml|toml|ini|cfg|editorconfig)$"
                        r"|(^|/)CHANGELOG(\.[^/]+)?$|(^|/)CHANGES(\.[^/]+)?$", re.I)
 # A landing whose added lines collapse to this few distinct lines is one edit
@@ -90,14 +84,6 @@ DEFAULT_SWEEP_LINES_PER_FILE = 4
 DEFAULT_DOMINANT = 0.7     # a single top-level dir holding this share of files is descended into
 
 
-# A commit whose committer is the hosting platform is a squashed or rebased
-# branch landing: one pull request, one landing, whatever its neighbours are.
-# Grouping such commits by time welded independent pull requests merged within
-# an hour into one landing — a one-file dependency bump read as 586 files
-# across 18 areas. Kept in step with bin/reviewability.
-FORGE_COMMITTERS = {
-    "noreply@github.com", "noreply@gitlab.com", "noreply@gitea.io", "noreply@codeberg.org",
-}
 
 def tg(*args):
     p = subprocess.run([str(ROOT / "bin" / "target-git"), *args],

@@ -148,7 +148,9 @@ decide **where to look**, never as a conclusion on its own.
   increment. A forge-committed commit is now its own increment. R-011's
   plateau pooling was tried here and reverted the same day: the reasoning rate
   keeps a gradient at the top, and pooling demoted a 62% band to "below the
-  bar". A divergence surfaced in the same sweep and is
-  recorded in `principles/README.md`: this rule counts code by an extension
-  allowlist where R-011 counts anything not test, doc or noise, so the same
-  landing can sit in different bands under the two sibling rules.
+  bar". A divergence surfaced in the same sweep: this rule counted code by an
+  extension allowlist where R-011 counted anything not test, doc or noise, so
+  the same landing could sit in different bands under the two sibling rules.
+  **Closed the same day** by `bin/classify.py`, one classifier imported by
+  both; verified on the history that exposed it, where the two now bin the
+  same landings into the same bands with identical rates.

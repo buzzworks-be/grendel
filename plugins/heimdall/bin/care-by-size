@@ -46,26 +46,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import NOISE_RE, TEST_RE, DOC_RE, INLINE_TEST_RE, FORGE_COMMITTERS  # noqa: E402
 
-TEST_RE = re.compile(
-    r"(^|/)(tests?|__tests__|spec|specs|e2e|testing)(/)"
-    r"|(^|/)test_[^/]+$|_test\.[^/.]+$|\.test\.[^/.]+$|\.spec\.[^/.]+$"
-    r"|Test[s]?\.[^/.]+$|_spec\.[^/.]+$|conftest\.py$", re.I)
-DOC_RE = re.compile(r"(^|/)(docs?|adr|adrs|decisions|rfcs?|design)(/|$)"
-                    r"|\.(md|rst|adoc|txt)$", re.I)
-NOISE_RE = re.compile(
-    r"(^|/)(vendor|node_modules|third_party|dist|build|generated)(/)"
-    r"|(lock|\.lock)$|go\.sum$|Cargo\.lock$|\.min\.(js|css)$"
-    r"|\.(svg|png|jpg|jpeg|gif|ico|pdf|woff2?)$", re.I)
-# Kept in step with bin/tests-with-code: two measures that both ask "did tests
-# arrive" must not disagree about what a test is.
-INLINE_TEST_RE = re.compile(
-    r"#\[\s*cfg\s*\(\s*test\s*\)\s*\]"
-    r"|#\[\s*(tokio::|async_std::|rstest|test_case)?\s*test"
-    r"|^\+\s*(async\s+)?def\s+test_"
-    r"|@Test\b|\[\s*(Fact|Theory|Test|TestMethod)\s*\]"
-    r"|^\+\s*(describe|it|test)\s*\("
-    r"|^\+\s*func\s+Test[A-Z]", re.M)
 
 # A landing this doc-heavy is a documentation change, not a code change that
 # brought documentation with it. Counting it as "carried reasoning" inflates the
@@ -77,14 +61,6 @@ DEFAULT_ACT_GAP = 60
 DEFAULT_MIN_BAND = 5      # below this a band's rate is noise, not a norm
 
 
-# A commit whose committer is the hosting platform is a squashed or rebased
-# branch landing: one pull request, one landing, whatever its neighbours are.
-# Grouping such commits by time welded independent pull requests merged within
-# an hour into one landing — a one-file dependency bump read as 586 files
-# across 18 areas. Kept in step with bin/reviewability.
-FORGE_COMMITTERS = {
-    "noreply@github.com", "noreply@gitlab.com", "noreply@gitea.io", "noreply@codeberg.org",
-}
 
 def tg(*args):
     p = subprocess.run([str(ROOT / "bin" / "target-git"), *args],

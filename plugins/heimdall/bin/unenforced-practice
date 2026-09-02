@@ -36,22 +36,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import NOISE_RE, TEST_RE, DOC_RE, INLINE_TEST_RE, FORGE_COMMITTERS  # noqa: E402
 
 DEFAULT_RELIANCE = 0.60   # practice rate above which the repo evidently relies on it
 DEFAULT_MIN_CHANGES = 5   # below this the rate is an accident
 DEFAULT_ACT_GAP = 60      # minutes; direct commits closer than this are one landing
 
-DOC_RE = re.compile(
-    r"(^|/)(docs?|adr|adrs|decisions|rfcs?|design|specs?)(/|$)"
-    r"|\.(md|rst|adoc)$", re.I)
-TEST_RE = re.compile(
-    r"(^|/)(tests?|__tests__|spec|specs|e2e|it)(/)"
-    r"|(^|/)test_[^/]+$|_test\.[^/.]+$|\.test\.[^/.]+$|\.spec\.[^/.]+$"
-    r"|Test[s]?\.[^/.]+$", re.I)
-NOISE_RE = re.compile(
-    r"(^|/)(vendor|node_modules|third_party|dist|build|generated)(/)"
-    r"|(lock|\.lock)$|package-lock\.json$|yarn\.lock$|go\.sum$|Cargo\.lock$"
-    r"|\.min\.(js|css)$", re.I)
 
 CI_GLOBS = [
     r"^\.github/workflows/.*\.ya?ml$", r"^\.gitlab-ci\.yml$", r"^Jenkinsfile$",
@@ -89,14 +81,6 @@ DOC_TOKENS = re.compile(
     r"spec|specification)\b", re.I)
 
 
-# A commit whose committer is the hosting platform is a squashed or rebased
-# branch landing: one pull request, one landing, whatever its neighbours are.
-# Grouping such commits by time welded independent pull requests merged within
-# an hour into one landing — a one-file dependency bump read as 586 files
-# across 18 areas. Kept in step with bin/reviewability.
-FORGE_COMMITTERS = {
-    "noreply@github.com", "noreply@gitlab.com", "noreply@gitea.io", "noreply@codeberg.org",
-}
 
 def git(*args, check=True):
     proc = subprocess.run([str(ROOT / "bin" / "target-git"), *args],
@@ -112,20 +96,6 @@ def show(ref, path):
     return p.stdout if p.returncode == 0 else ""
 
 
-# Tests that are not in a test FILE. Kept identical in intent to the detector in
-# bin/tests-with-code: two rules that both ask "did tests arrive" must not
-# disagree about what a test is. Rust puts unit tests in the file under test, so
-# a path-only detector reported a well-tested workspace at 26% and pushed this
-# rule below its own reliance bar — a detector defect turning into a false
-# silence rather than a false finding.
-INLINE_TEST_RE = re.compile(
-    r"#\[\s*cfg\s*\(\s*test\s*\)\s*\]"
-    r"|#\[\s*(tokio::|async_std::|rstest|test_case)?\s*test"
-    r"|^\+\s*(async\s+)?def\s+test_"
-    r"|@Test\b|\[\s*(Fact|Theory|Test|TestMethod)\s*\]"
-    r"|^\+\s*(describe|it|test)\s*\("
-    r"|^\+\s*func\s+Test[A-Z]",
-    re.M)
 
 
 def inline_tests(diffargs):

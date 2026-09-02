@@ -39,10 +39,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import FORGE_COMMITTERS  # noqa: E402
 
-FORGE_COMMITTERS = {
-    "noreply@github.com", "noreply@gitlab.com", "noreply@gitea.io", "noreply@codeberg.org",
-}
 # Refs that are not work: release and integration lines, and the platform's own.
 STRUCTURAL_RE = re.compile(
     r"^(release|releases|rel|stable|hotfix|hotfixes|maint|maintenance|support|"

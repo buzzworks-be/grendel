@@ -32,6 +32,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import FORGE_COMMITTERS  # noqa: E402
 
 DOC_EXT = (".md", ".rst", ".adoc", ".txt")
 CODE_EXT = (".ts", ".tsx", ".js", ".jsx", ".mjs", ".py", ".sql", ".go", ".rs",
@@ -100,18 +103,6 @@ def resolve(expr):
              f"'N days|weeks|months|years ago', 'now', 'today', 'yesterday'.")
 
 
-# See bin/reviewability for the measurement behind this list. A commit whose
-# committer is a hosting platform is the accept step of a pull request: for a
-# squash or rebase merge its timestamp is when the work was *let in*, not when
-# it was done, and the branch commits that carried the real timing are gone.
-# Any rule reasoning from elapsed time between commits must leave these out
-# rather than read merge cadence as work cadence.
-FORGE_COMMITTERS = {
-    "noreply@github.com",
-    "noreply@gitlab.com",
-    "noreply@gitea.io",
-    "noreply@codeberg.org",
-}
 
 
 def iso(ts):

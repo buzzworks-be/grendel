@@ -37,6 +37,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import FORGE_COMMITTERS  # noqa: E402
 
 GENERATED = ("package-lock.json", "yarn.lock", "pnpm-lock.yaml", "poetry.lock",
              "go.sum", "Cargo.lock", "composer.lock", "Gemfile.lock", ".snap")
@@ -118,19 +121,6 @@ def iso(ts):
     return datetime.fromtimestamp(ts, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-# See bin/reviewability for the measurement behind this list. A commit whose
-# committer is a hosting platform is the accept step of a pull request. For a
-# squash or rebase merge its timestamp is when the work was let in, not when it
-# was done, and the branch commits carrying the real timing are gone. A "run"
-# detected across such commits measures merge cadence, not production: on the
-# history that exposed this, three pull requests merged two minutes apart were
-# reported as 242,588 lines an hour. Nobody wrote 6,469 lines in two minutes.
-FORGE_COMMITTERS = {
-    "noreply@github.com",
-    "noreply@gitlab.com",
-    "noreply@gitea.io",
-    "noreply@codeberg.org",
-}
 
 def collect(since, until, ref):
     commits, cur = [], None

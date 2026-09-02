@@ -38,6 +38,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# Noise is noise everywhere: the shared definition, so a fixture or a snapshot
+# is skipped here as it is skipped by every script that bins by size.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import NOISE_RE  # noqa: E402
 
 # (line-comment markers, [(block open, block close), ...])
 C_LIKE = (["//"], [("/*", "*/")])
@@ -77,10 +81,6 @@ MACHINE_ONDEMAND = re.compile(
     r"^\.(claude|cursor|wolf|ai|agent)/"
     r"|(^|/)SKILL\.md$|(^|/)(skills|agents|commands)/[^/]+\.md$", re.I)
 CHARS_PER_TOKEN = 4          # the standard rough heuristic; see S-6
-NOISE_RE = re.compile(
-    r"(^|/)(vendor|node_modules|third_party|dist|build|generated|\.min\.)"
-    r"|(lock|\.lock)$|package-lock\.json$|yarn\.lock$|go\.sum$|Cargo\.lock$"
-    r"|\.min\.(js|css)$|\.svg$", re.I)
 HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s+\S|^\s{0,3}(=+|-+)\s*$")
 
 

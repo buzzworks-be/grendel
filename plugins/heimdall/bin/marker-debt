@@ -29,12 +29,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import NOISE_RE  # noqa: E402
 
 DEFAULT_MARKERS = r"TODO|FIXME|HACK|XXX|BUG"
-NOISE_RE = re.compile(
-    r"(^|/)(vendor|node_modules|third_party|dist|build|generated|fixtures?|__snapshots__)(/)"
-    r"|(lock|\.lock)$|package-lock\.json$|yarn\.lock$|go\.sum$|Cargo\.lock$"
-    r"|\.min\.(js|css)$|\.(svg|png|jpg|jpeg|gif|ico|pdf|woff2?|snap)$", re.I)
 
 DEFAULT_WINDOW_DAYS = 30
 DEFAULT_WINDOWS = 4

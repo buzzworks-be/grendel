@@ -31,6 +31,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import NOISE_RE  # noqa: E402
 
 # Kept in step with bin/unenforced-practice where the categories overlap.
 CATEGORIES = [
@@ -76,9 +79,6 @@ CATEGORIES = [
         r"^CLAUDE\.md$", r"^AGENTS\.md$", r"^\.cursorrules$", r"^\.cursor/rules/.*",
     ]),
 ]
-NOISE_RE = re.compile(
-    r"(^|/)(vendor|node_modules|third_party|dist|build|generated)(/)"
-    r"|(lock|\.lock)$|package-lock\.json$|yarn\.lock$|go\.sum$|Cargo\.lock$", re.I)
 
 
 def tg(*args):

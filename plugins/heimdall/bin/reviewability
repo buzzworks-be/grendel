@@ -61,32 +61,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# One classifier for every script that bins by lines of code. See bin/classify.py.
+sys.path.insert(0, str(ROOT / "bin"))
+from classify import FORGE_COMMITTERS  # noqa: E402
 
 # Files whose size says nothing about how long they take to read.
 GENERATED = ("package-lock.json", "yarn.lock", "pnpm-lock.yaml", "poetry.lock",
              "go.sum", "Cargo.lock", "composer.lock", "Gemfile.lock", ".snap")
 
-# Deliberately far more permissive than any review guidance: studies of review
-# effectiveness put the useful ceiling near 200-400 lines an hour. The default
-# here is several times that, so a finding means "not humanly possible", not
-# merely "faster than ideal". Lower it to tighten; the tool will not argue.
-# A commit whose committer is one of these was created by a hosting platform on
-# someone's behalf: the accept step of a pull or merge request, whether that was
-# a merge commit, a squash or a rebase. The identity is in git, so this needs no
-# forge API and works on a bare clone.
-#
-# GitHub is measured, not assumed — on the history that exposed this blindness,
-# 300 of 312 commits carried `GitHub <noreply@github.com>` against 7 human
-# committers. The others are best-effort; a forge not listed here degrades to
-# "direct", which is the pre-existing behaviour, and the count of landings whose
-# committer is unrecognised is reported so a case file can say what it could not
-# classify rather than silently over-reporting.
-FORGE_COMMITTERS = {
-    "noreply@github.com",
-    "noreply@gitlab.com",
-    "noreply@gitea.io",
-    "noreply@codeberg.org",
-}
 
 DEFAULT_RATE = 1000.0
 DEFAULT_FLOOR = 50      # changes smaller than this need no measurable reading time
