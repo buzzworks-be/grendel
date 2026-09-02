@@ -417,3 +417,59 @@ versions weekly.
 **No rule, and none proposed.** This narrows the frame's *verification
 blindness* gap — the gate chain is at least visible — without closing it, and
 the residue is the same forge boundary R-001 lives with.
+
+---
+
+## S-13. Merge provenance — what a merge landed beyond its branches
+
+**Measure:** for each two-parent merge with a merge-base, the automatic
+merge of the parents is recomputed (`git merge-tree --write-tree`) and the
+merge's actual tree is diffed against it. Reported in two parts: the size of
+any hand-written resolution inside conflicted files, and every change in a
+file no conflict touched. `bin/merge-provenance` computes it.
+
+**Suggests:** how much of a repository's landed content exists on no branch.
+A merge identical to the automatic merge carried only what was reviewed; one
+that differs carried something that was not.
+
+**How it lies:** the automatic merge is git's, with the default strategy. A
+repository that merges through a queue, a bot or a custom driver will differ
+from it systematically, and every merge will read as carrying extra content
+— which is the tell, and the first run makes it obvious. A conflict
+resolution is content from neither branch and is expected; only its size
+is informative. Not applicable at all on squash and applied-patch histories,
+which is most of them. Measured: on a merge-commit library, 45 of 57 merges
+identical, 15 with resolutions of median 15 lines and one of 428, one
+changing four lines outside any conflict; on a button-merge application, 441
+of 441 identical.
+
+**Derived rule:** R-017, from the outside-any-conflict half only.
+
+---
+
+## S-14. Removal notice — how long a deprecation stands before its thing goes
+
+**Measure:** over first-parent diffs, every deprecation marker added and
+later deleted, keyed by file and normalised text, giving notices opened,
+closed, withdrawn (the closing commit is a revert) and still open; the
+distribution of notice length when closed; and the age of what is still
+open. Markers are recognised by the common languages' conventions and are
+configurable. Only code paths count — not configuration, documentation,
+tests, vendored trees, or anything under `internal/`. `bin/removal-notice`
+computes it.
+
+**Suggests:** how much time a repository gives between announcing a removal
+and making it.
+
+**How it lies:** in a stack of ways the first runs enumerated one by one. A
+test runner's `filterwarnings` line in a config file matched (twenty days,
+deprecated nothing). A vendored tree under `third-party/` matched twenty-six
+times. Two symbols under `internal/` had no downstream reader. Three two-day
+closures were one reverted pull request — a notice withdrawn, not a thing
+removed. A rewording in a separate commit read as a fresh notice. And a
+repository migrating text markers to a struct-based mechanism the pattern
+does not know reads as closing every notice at once. What remains after all
+of that: the pattern is convention-bound, a commented-out marker matches, and
+whether anything downstream existed is not in git at all.
+
+**Derived rule:** R-018, conditional on the repository using markers.

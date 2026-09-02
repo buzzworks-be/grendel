@@ -35,12 +35,12 @@ it.** Every principle below is a facet of that.
 > **Status: candidate.** These are stated, not settled.
 >
 > P-1 to P-4 each have at least one **active** derived rule, though they are not
-> equally strong — see the note on rule strength in `README.md`. P-5 to P-11
-> have only **draft** rules (R-008 to R-016): their thresholds were chosen or
+> equally strong — see the note on rule strength in `README.md`. P-5 to P-13
+> have only **draft** rules (R-008 to R-018): their thresholds were chosen or
 > swept on a handful of histories rather than calibrated, so they may be raised
 > in a case file as observations and never as violations. That limit is real,
 > not a formality: a draft rule must never be cited as though an increment
-> failed it. Every principle has at least one derived rule; seven of them have
+> failed it. Every principle has at least one derived rule; nine of them have
 > only a draft.
 
 ---
@@ -458,3 +458,74 @@ It now requires all three of an absolute floor, a multiple of the band's
 median, and the band's 90th percentile, and the survivors on a 41-area
 workspace were the landings a reader would want listed — including one whose
 subject called itself work in progress.
+
+---
+
+## P-12. The record must describe the change it carries
+
+P-4 asks whether the history says truthfully *who* produced the work. This
+asks whether it says truthfully *what* the work was. A commit's label — its
+subject, its type, the word "merge" — is what a reader trusts instead of
+reading the diff, and a change that outruns its label is unreviewed in a
+specific way: the reader who trusted the label never looked.
+
+The sharpest case is the merge. A merge commit says it combined two lines of
+work. When it also did something else — resolved a conflict by hand,
+regenerated a file, fixed a test so the result would pass, slipped in a
+change — that something existed on neither branch, was reviewed on neither,
+and sits in the one diff nobody reads. It is not hidden; it is unlabelled,
+and unlabelled is enough.
+
+The concern is the description, not the content. A wide change correctly
+described is P-11's business; a small change described as a typo is this
+principle's, however small.
+
+This principle has the property the frame prefers and rarely gets: the
+cheapest way to satisfy any rule under it is to describe the change
+correctly, which is the practice.
+
+**Rules out:** treating a merge as content-free because it is a merge;
+trusting a typed subject without a rule that checks the type against the
+content; and reading a history's labels as its record.
+
+**Derived rules:** R-017 (a merge carries only what its branches carried) —
+**draft**. It recomputes the automatic merge of a merge's two parents and
+reports whatever the merge landed beyond it outside any conflicted file. Two
+further rules are named and not yet written, in the house order: that a typed
+subject must be able to contain its content, and that a subject naming a
+trivial class of change must not carry substantial code. Both wait on an
+extractor and a run.
+
+---
+
+## P-13. Removal must give a reader time to leave
+
+P-3 is about the interval between deciding and building. Nothing above covers
+the symmetric interval: between announcing that something will go and its
+going. A consumer downstream lives in that interval. A public thing removed
+the same week it was marked deprecated gave nobody time to move; one removed
+with no marker at all gave them none. Software produced faster than anyone
+can absorb it is also removed faster than anyone can leave it, and this is
+the spine applied to the exit rather than the entrance.
+
+Stated with two limits, both real. **What is public is not visible from
+git.** Whether anything downstream depended on the thing removed is a fact
+about consumers, and a rule that inferred an audience would be Heimdall
+holding an opinion about someone else's users; a rule here reads only what
+the repository itself marked, and the reader decides whether anyone was
+outside. And **a removal never announced is invisible** by construction —
+there is no marker to find an interval for. That is the larger half of this
+concern, and it stays in the case file as an observation, never a finding.
+
+**Rules out:** removing what was deprecated before the deprecation could
+have been read; treating a marker as a formality discharged by its presence;
+and inferring who was downstream in a repository that has not said.
+
+**Derived rules:** R-018 (a removal gives notice first, and the notice stands
+long enough to be read) — **draft**, and **advisory** because it cannot tell
+an application, whose symbols have no downstream importer, from a library,
+whose symbols do. Conditional in the R-003 shape on the repository using
+deprecation markers at all; on four histories it stood down on one, read a
+median notice of 225 days on a library, a year on an application, and 44
+days on a workspace, and its first run on each history put a false positive
+at the top of its list that became a mechanical exclusion.

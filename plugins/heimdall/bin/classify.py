@@ -39,7 +39,7 @@ line of code" and unifying them here would be a category error.
 import re
 
 NOISE_RE = re.compile(
-    r"(^|/)(vendor|node_modules|third_party|dist|build|generated|__snapshots__|snapshots?|fixtures?)(/)"
+    r"(^|/)(vendor|vendored|node_modules|third[-_]party|dist|build|generated|__snapshots__|snapshots?|fixtures?)(/)"
     r"|(lock|\.lock)$|package-lock\.json$|yarn\.lock$|pnpm-lock\.yaml$|poetry\.lock$"
     r"|go\.sum$|Cargo\.lock$|composer\.lock$|Gemfile\.lock$"
     r"|\.min\.(js|css)$|\.(svg|png|jpg|jpeg|gif|ico|pdf|woff2?|snap)$", re.I)
