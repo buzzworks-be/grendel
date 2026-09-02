@@ -36,7 +36,7 @@ it.** Every principle below is a facet of that.
 >
 > P-1 to P-4 each have at least one **active** derived rule, though they are not
 > equally strong — see the note on rule strength in `README.md`. P-5 to P-13
-> have only **draft** rules (R-008 to R-018): their thresholds were chosen or
+> have only **draft** rules (R-008 to R-020): their thresholds were chosen or
 > swept on a handful of histories rather than calibrated, so they may be raised
 > in a case file as observations and never as violations. That limit is real,
 > not a formality: a draft rule must never be cited as though an increment
@@ -488,13 +488,18 @@ correctly, which is the practice.
 trusting a typed subject without a rule that checks the type against the
 content; and reading a history's labels as its record.
 
-**Derived rules:** R-017 (a merge carries only what its branches carried) —
-**draft**. It recomputes the automatic merge of a merge's two parents and
-reports whatever the merge landed beyond it outside any conflicted file. Two
-further rules are named and not yet written, in the house order: that a typed
-subject must be able to contain its content, and that a subject naming a
-trivial class of change must not carry substantial code. Both wait on an
-extractor and a run.
+**Derived rules:** R-017 (a merge carries only what its branches carried),
+R-019 (a typed subject must be able to hold its content) and R-020 (a
+subject naming a trivial change must not carry a substantial one) — all
+**draft**. R-017 recomputes the automatic merge of a merge's two parents and
+reports whatever the merge landed beyond it outside any conflicted file.
+R-019 is conditional on the repository typing its subjects, and learns where
+that repository's source and tests live from where its own typed landings
+go — the frame's usual move, the target's own standard, applied to layout.
+R-020 needs no convention: every repository has a "fix typo" commit, and on
+its first history the survivors were a "types cleanup" of 1,822 lines and a
+"clean up … a bit" of 1,116 — the first rule in the frame whose first-contact
+survivors were the shape it describes rather than exemptions.
 
 ---
 

@@ -473,3 +473,34 @@ of that: the pattern is convention-bound, a commented-out marker matches, and
 whether anything downstream existed is not in git at all.
 
 **Derived rule:** R-018, conditional on the repository using markers.
+
+---
+
+## S-15. Subject against content — what a landing said against what it did
+
+**Measure:** per landing on the first-parent line, the subject (for a merge,
+the first line of its body where a platform puts the pull-request title, else
+the branch tip's subject) against the classified churn: whether the subject
+is typed and with what type, whether it makes a trivial claim, and how many
+source lines it carries in the repository's source home and outside its test
+home — both homes learned from which typed landings touch which directories.
+`bin/subject-content` computes it.
+
+**Suggests:** how far a reader can trust this repository's labels, which is
+how far a reader filtering by label can skip.
+
+**How it lies:** the typed convention is recognised in its common form only,
+and a repository with its own vocabulary reads as untyped. The homes need
+ten typed landings of each kind to learn and are learned at two path levels;
+churn share cannot learn them at all, because good `fix:` commits carry tests
+into the test directories. Doc comments inside source are source. The
+trivial-word list is English and finite, and matching it anywhere in a
+subject was wrong half the time — the feature's own domain, a backticked
+identifier, one clause of a long subject — until only the head claim
+counted. Measured: on a fully typed history, 348 restrictive-type landings
+yielded six candidates after the layout was learned; on a partly typed one
+the typed half stood down and 227 trivial claims yielded six, all the shape
+the rule describes.
+
+**Derived rules:** R-019, from the typed half, conditional; R-020, from the
+trivial-claim half.
