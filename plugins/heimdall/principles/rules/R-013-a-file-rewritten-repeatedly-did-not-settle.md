@@ -4,6 +4,7 @@ title: A file majority-replaced repeatedly in one window did not settle
 principle: P-9
 severity: warning
 status: draft
+introduced: 0.8.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

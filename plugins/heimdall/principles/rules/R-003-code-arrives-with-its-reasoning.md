@@ -4,6 +4,7 @@ title: Substantial implementation arrives with the reasoning behind it
 principle: P-2
 severity: warning
 status: active
+introduced: 0.1.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

@@ -4,6 +4,7 @@ title: Work landing on the trunk must not outrun a reader
 principle: P-1
 severity: warning
 status: active
+introduced: 0.1.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

@@ -56,7 +56,11 @@ Heimdall itself.
 
    This refuses (exit 4) if `principles/` has uncommitted changes, and prints
    the sha to stamp into the case file. If it refuses, stop and say why — do not
-   work around it by committing the rules yourself mid-assessment.
+   work around it by committing the rules yourself mid-assessment. If it fails
+   in any other way, or pins something that looks wrong for where Heimdall is
+   installed, record `"$H"/bin/heimdall-state --explain` in the case file: it
+   prints every step of the checkout-or-plugin decision, and a report that
+   carries the reason can be fixed where one that carries the symptom cannot.
 
    **A reading is a range under a pin, and both halves decide whether there is
    work to do.** Compare the pin against any earlier case file on this range

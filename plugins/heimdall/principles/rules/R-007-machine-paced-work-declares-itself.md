@@ -4,6 +4,7 @@ title: Machine-paced work declares itself
 principle: P-4
 severity: warning
 status: active
+introduced: 0.1.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

@@ -34,8 +34,9 @@ version pin built for exactly that case. Reported from a session that had
 HEIMDALL_STATE set and CLAUDE_PLUGIN_ROOT not.
 
 Usage:
-  bin/heimdall-state          print the state root
-  bin/heimdall-state --mode   print "checkout" or "plugin"
+  bin/heimdall-state            print the state root
+  bin/heimdall-state --mode     print "checkout" or "plugin"
+  bin/heimdall-state --explain  print every step of that decision, for a field report
 """
 
 import os
@@ -46,18 +47,49 @@ from pathlib import Path
 HOME = Path(__file__).resolve().parent.parent
 
 
-def is_plugin_install():
+def is_plugin_install(explain=None):
+    """Plugin or checkout, decided once, here.
+
+    A checkout is where Heimdall is BUILT: its rules are under version control
+    in this very directory. Anything else — a managed cache with no history, a
+    cache nested inside some unrelated repository, a copy somebody `git init`ed
+    — is Heimdall installed to be RUN, and must never be asked for a sha. Two
+    ways to be a plugin, either sufficing:
+
+      1. the host says so: CLAUDE_PLUGIN_ROOT names this code root;
+      2. the tree says so: this code root is not the top of a git work tree
+         in which principles/PRINCIPLES.md is a tracked file.
+
+    The second test replaced "is there a .git here" after a field report: a
+    cache that had been `git init`ed read as a checkout, principles/ showed as
+    untracked, and principles-ref refused for the wrong reason.
+    """
+    say = explain if explain else (lambda *_: None)
     plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT")
     if plugin_root and Path(plugin_root).resolve() == HOME:
+        say("CLAUDE_PLUGIN_ROOT names this code root → plugin")
         return True
+    say(f"CLAUDE_PLUGIN_ROOT={plugin_root!r}" + (" (does not name this code root)" if plugin_root else " (unset)"))
     try:
         top = subprocess.run(["git", "-C", str(HOME), "rev-parse", "--show-toplevel"],
                              capture_output=True, text=True)
     except OSError:
-        return True                      # no git at all: certainly not a checkout
+        say("git not runnable → plugin")
+        return True
     if top.returncode != 0:
-        return True                      # not inside any work tree
-    return Path(top.stdout.strip()).resolve() != HOME
+        say("not inside any git work tree → plugin")
+        return True
+    toplevel = Path(top.stdout.strip()).resolve()
+    if toplevel != HOME:
+        say(f"inside a work tree whose top is {toplevel}, not this code root → plugin")
+        return True
+    tracked = subprocess.run(["git", "-C", str(HOME), "ls-files", "--error-unmatch",
+                              "principles/PRINCIPLES.md"], capture_output=True, text=True)
+    if tracked.returncode != 0:
+        say("this code root is a git top-level, but principles/ is not tracked in it → plugin")
+        return True
+    say("this code root is a git top-level and principles/ is tracked in it → checkout")
+    return False
 
 
 def resolve():
@@ -79,6 +111,16 @@ def resolve():
 
 
 def main():
+    if "--explain" in sys.argv[1:]:
+        # For a field report: every step of the decision, so the next one can
+        # say WHY a cache read as a checkout instead of that it did.
+        print(f"code root: {HOME}")
+        is_plugin_install(explain=lambda m: print("  " + m))
+        state, mode = resolve()
+        print(f"HEIMDALL_STATE={os.environ.get('HEIMDALL_STATE')!r}  "
+              f"CLAUDE_PLUGIN_DATA={os.environ.get('CLAUDE_PLUGIN_DATA')!r}")
+        print(f"mode: {mode}\nstate root: {state}")
+        return 0
     state, mode = resolve()
     if "--mode" in sys.argv[1:]:
         print(mode)

@@ -4,6 +4,7 @@ title: A specification must have had an interval in which to be decided on
 principle: P-3
 severity: warning
 status: active
+introduced: 0.1.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

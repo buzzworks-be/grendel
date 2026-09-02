@@ -4,6 +4,7 @@ title: An increment must not span more declared areas than the repository's own 
 principle: P-11
 severity: advisory
 status: draft
+introduced: 0.8.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

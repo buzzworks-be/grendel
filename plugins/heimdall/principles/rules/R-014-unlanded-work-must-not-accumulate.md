@@ -4,6 +4,7 @@ title: Unlanded work must not accumulate across consecutive windows
 principle: P-10
 severity: warning
 status: draft
+introduced: 0.8.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

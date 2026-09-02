@@ -4,6 +4,7 @@ title: Reverted work must not return unchanged
 principle: P-9
 severity: warning
 status: draft
+introduced: 0.8.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

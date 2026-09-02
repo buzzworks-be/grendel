@@ -4,6 +4,7 @@ title: Care must follow the gradient a repository declares in its own ownership 
 principle: P-5
 severity: warning
 status: draft
+introduced: 0.1.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

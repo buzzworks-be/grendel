@@ -4,6 +4,7 @@ title: A document must offer a reader a way in partway
 principle: P-7
 severity: advisory
 status: draft
+introduced: 0.1.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*.md"
   - "**/*.rst"

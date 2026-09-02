@@ -4,6 +4,7 @@ title: Recorded obligations must be discharged, not only accumulated
 principle: P-10
 severity: advisory
 status: draft
+introduced: 0.8.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---

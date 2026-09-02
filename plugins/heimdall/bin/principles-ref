@@ -27,15 +27,16 @@ MODE="$("$ROOT/bin/heimdall-state" --mode)"
 # through and stamped THAT repository's sha into the case file as the standard
 # the reading was made against. A case file citing a frame that never existed is
 # worse than one citing a version.
-pin_version() {
-  ver="$(python3 - "$ROOT/.claude-plugin/plugin.json" <<'VERPY' 2>/dev/null || echo unknown
+VER="$(python3 - "$ROOT/.claude-plugin/plugin.json" <<'VERPY' 2>/dev/null || echo unknown
 import json, sys
 print(json.load(open(sys.argv[1]))["version"])
 VERPY
 )"
+
+pin_version() {
   n="$(grep -l "^status: active" "$ROOT"/principles/rules/R-*.md 2>/dev/null | wc -l | tr -d ' ')"
-  echo "heimdall: principles @ plugin v$ver, $n active rule(s) ($1)" >&2
-  echo "plugin-v$ver"
+  echo "heimdall $VER: principles @ plugin v$VER, $n active rule(s) ($1)" >&2
+  echo "plugin-v$VER"
 }
 
 if [ "$MODE" = "plugin" ]; then
@@ -44,7 +45,14 @@ if [ "$MODE" = "plugin" ]; then
 fi
 cd "$ROOT"
 
-dirty="$(git status --porcelain -- principles/)"
+# Every git call from here is guarded. Under set -e an unguarded one that
+# fails takes the script down with git's own exit 128, which a field report
+# then has to explain instead of the pin explaining itself. A checkout where
+# git cannot answer is pinned by version, with a note saying why.
+if ! dirty="$(git status --porcelain -- principles/ 2>/dev/null)"; then
+  pin_version "git could not read this directory; it resolved as a checkout but has no usable history"
+  exit 0
+fi
 if [ -n "$dirty" ]; then
   {
     echo "heimdall: principles/ has uncommitted changes — refusing to assess."
@@ -67,7 +75,7 @@ fi
 # grep exits 1 on no matches, which pipefail would turn into a script failure.
 active="$({ grep -lE '^status:[[:space:]]*active' principles/rules/*.md 2>/dev/null || true; } | wc -l | tr -d ' ')"
 
-echo "heimdall: principles @ ${sha:0:12}, ${active} active rule(s)" >&2
+echo "heimdall $VER: principles @ ${sha:0:12}, ${active} active rule(s)" >&2
 if [ "$active" -eq 0 ]; then
   echo "heimdall: no active rules — an assessment has nothing to judge against." >&2
 fi

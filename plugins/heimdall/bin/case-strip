@@ -10,8 +10,12 @@ it costs nothing, pastes anywhere, and survives a terminal.
 mentions.** A reading that omitted a rule shows `!`, not a shorter strip. That
 is the whole point: silence about a rule reads as coverage of it, and a case
 file with four rules missing looks clean unless something insists on showing the
-gap. It also makes frame drift legible — older readings show `!` for rules that
-did not exist yet, which is honest rather than a defect.
+gap. Frame drift is legible too, and told apart from silence: a rule that did
+not exist at the reading's pin renders `∅`, never `!` — the strip must not
+accuse a correct case file of silence about a rule it could not have known. A
+sha pin is resolved through git where there is git; a version pin through
+each rule's `introduced:` field; a pin that resolves through neither renders
+`~`, which says the strip could not tell, rather than guessing either way.
 
 Reads `outcomes:` from case-file frontmatter. It does not parse prose: a strip
 derived from the narrative would disagree with the record eventually, and the
@@ -23,6 +27,7 @@ Usage:
   bin/case-strip path/to/one.md      a single case file
 """
 
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -43,6 +48,10 @@ CELL = {
     # gap in the case file; a blank where a rule did not yet exist, or had been
     # retired, is not the case file's fault and must not read as one.
     "no-such-rule": "∅",
+    # The pin could not be resolved to a rule set at all — a sha from a
+    # checkout read where there is no git, say. Neither an accusation nor an
+    # exoneration: the strip does not know, and says so.
+    "unknown-frame": "~",
 }
 LEGEND = [
     ("✓", "pass"),
@@ -52,6 +61,7 @@ LEGEND = [
     ("·", "observation (draft)"),
     ("!", "not reported — rule existed, case file silent"),
     ("∅", "no such rule at this reading's frame"),
+    ("~", "frame unresolvable — could not tell whether the rule existed"),
 ]
 
 # The block is meant to survive a terminal, a ticket field and a chat message
@@ -91,7 +101,18 @@ def rules_at(sha, _cache={}):
     if sha in _cache:
         return _cache[sha]
     out = None
-    if sha and len(sha) >= 7 and all(c in "0123456789abcdef" for c in sha.lower()):
+    m = re.fullmatch(r"plugin-v(\d+)\.(\d+)\.(\d+)", sha or "")
+    if m:
+        # A version pin: a rule existed at it if it was introduced at or
+        # before that version. Read from each rule's own frontmatter, so the
+        # answer travels with the rule and needs no history.
+        pin = tuple(int(x) for x in m.groups())
+        out = set()
+        for f in (ROOT / "principles" / "rules").glob("R-*.md"):
+            intro = _introduced(f)
+            if intro is not None and intro <= pin:
+                out.add("-".join(f.name.split("-")[:2]))
+    elif sha and len(sha) >= 7 and all(c in "0123456789abcdef" for c in sha.lower()):
         r = subprocess.run(["git", "-C", str(ROOT), "ls-tree", "--name-only",
                             f"{sha}:principles/rules"],
                            capture_output=True, text=True)
@@ -100,6 +121,17 @@ def rules_at(sha, _cache={}):
                    if n.startswith("R-")}
     _cache[sha] = out
     return out
+
+
+def _introduced(rule_path):
+    for line in rule_path.read_text(errors="replace").splitlines()[:20]:
+        if line.startswith("introduced:"):
+            v = line.split(":", 1)[1].split("#", 1)[0].strip()
+            try:
+                return tuple(int(x) for x in v.split("."))
+            except ValueError:
+                return None
+    return None
 
 
 def frontmatter(path):
@@ -134,9 +166,13 @@ def row(fm, ids):
     cells = []
     for rid in ids:
         raw = outs.get(rid)
-        if raw is None and known is not None and rid not in known:
-            cells.append(CELL["no-such-rule"])
-            continue
+        if raw is None:
+            if known is None:
+                cells.append(CELL["unknown-frame"])
+                continue
+            if rid not in known:
+                cells.append(CELL["no-such-rule"])
+                continue
         v = (raw or "not-reported").strip().lower().replace(" ", "-")
         cells.append(CELL.get(v, "!"))
     return cells

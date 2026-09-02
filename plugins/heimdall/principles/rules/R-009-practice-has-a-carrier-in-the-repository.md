@@ -4,6 +4,7 @@ title: A practice the repository relies on must be carried by something in the r
 principle: P-6
 severity: advisory
 status: draft
+introduced: 0.1.0   # first plugin version carrying this rule; bin/case-strip reads it
 applies-to:
   - "**/*"
 ---
