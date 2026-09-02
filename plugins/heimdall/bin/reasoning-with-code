@@ -48,6 +48,12 @@ BANDS = [(1, 24), (25, 99), (100, 299), (300, 999), (1000, 10 ** 9)]
 # about as loudly as under-spending. Chosen, not measured — hence still draft.
 NO_FINDING_BAND = "1-24"
 
+# R-011 pools the bands from 100 lines up, because the TEST rate plateaus
+# there on every history swept. This rule does not: the REASONING rate keeps a
+# gradient at the top — rising into 1000+ on two of five histories, falling on
+# one — and pooling it hid the one band where a repository did explain itself
+# (62% at 1000+ against 29% pooled). Each band judged on its own rate.
+
 # A landing that is mostly documentation IS the documentation change; counting
 # it as "carried reasoning" measures nothing about how code is produced, and it
 # inflated the small bands with README edits — 67% before this exclusion
@@ -61,6 +67,14 @@ DEFAULT_ACT_GAP = 60      # minutes; direct commits closer than this are one act
 # so windowed and full-history readings can differ slightly at the margins.
 CONVENTION_MIN = 0.50     # the rule applies only above this share
 
+
+# A commit whose committer is the hosting platform is a squashed or rebased
+# branch landing: one pull request, one increment, whatever its neighbours are.
+# Grouping such commits by time welded independent pull requests merged within
+# an hour into one increment. Kept in step with bin/reviewability.
+FORGE_COMMITTERS = {
+    "noreply@github.com", "noreply@gitlab.com", "noreply@gitea.io", "noreply@codeberg.org",
+}
 
 def tg(*args):
     proc = subprocess.run([str(ROOT / "bin" / "target-git"), *args],
@@ -211,11 +225,11 @@ def increments(since, until, ref, act_gap):
                     "commits": len(tg("log", "--format=%H", f"{base}..{p[1]}").split())})
 
     direct = []
-    for line in tg("log", "--no-merges", "--format=%H|%at|%s",
+    for line in tg("log", "--no-merges", "--format=%H|%at|%ce|%s",
                    f"--since={since}", f"--until={until}", ref).splitlines():
-        sha, at, subject = line.split("|", 2)
+        sha, at, ce, subject = line.split("|", 3)
         if sha not in on_branch:
-            direct.append((sha, int(at), subject))
+            direct.append((sha, int(at), subject, ce.strip().lower() in FORGE_COMMITTERS))
     direct.sort(key=lambda d: d[1])
 
     run = []
@@ -223,7 +237,7 @@ def increments(since, until, ref, act_gap):
         if not run:
             return
         doc = code = 0
-        for sha, _, _ in run:
+        for sha, _, _, _ in run:
             d, c = commit_churn(sha)
             doc += d
             code += c
@@ -232,6 +246,14 @@ def increments(since, until, ref, act_gap):
                     "commits": len(run)})
 
     for entry in direct:
+        if entry[3]:
+            # A forge-committed commit is one squashed or rebased branch: its own
+            # increment, never grouped with its neighbours by time. See
+            # FORGE_COMMITTERS.
+            flush(run)
+            run = []
+            flush([entry])
+            continue
         if run and (entry[1] - run[-1][1]) / 60 > act_gap:
             flush(run)
             run = []

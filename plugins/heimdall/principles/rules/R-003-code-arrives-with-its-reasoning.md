@@ -33,13 +33,17 @@ fix, a version bump, a URI correction. Demanding ceremony of it is the
 over-spending P-5 warns about exactly as loudly as under-spending, and the
 whole value of such a change is that it is cheap.
 
-**Why stratified.** A single threshold asked the same thing of a 100-line
-landing and a 10,000-line one, and nothing at all of a 99-line one. Measured
-across three repositories and 304 landings before either rule was changed, care
-rises with size in every one. The consequence is concrete: in the 100-299 band
-one repository carried tests on 95% of landings and another on 46% — an
-untested 150-line landing is a real anomaly in the first and unremarkable in the
-second, and a flat threshold reports them identically.
+**Why stratified — and why this rule, unlike R-011, judges every band on its
+own.** A single threshold asked the same thing of a 100-line landing and a
+10,000-line one, and nothing at all of a 99-line one. First measured across
+three repositories and 304 landings; re-swept on the corrected landing unit
+across five histories and about 2,180 landings. The *test* rate climbs to a
+plateau at 100 lines, and R-011 pools the bands above it. The *reasoning* rate
+does not plateau: it rose into the 1000+ band on two histories (10% → 19% →
+62% on one) and fell on another. Pooling hid the one band where a repository
+did explain itself — 62% against a pooled 29% — so here each band is judged
+against its own rate, and the two sibling rules differ on this one point for
+a measured reason.
 
 This is also how P-5 is served without a declaration. Reading stakes off the
 code is forbidden — it would be Heimdall holding an opinion about someone
@@ -135,3 +139,16 @@ and R-002 assert impossibility — that no time existed for reading or deciding,
 which no explanation can undo. R-003 asserts only that a file did not change in a
 particular window, and there are several innocent reasons for that. Use it to
 decide **where to look**, never as a conclusion on its own.
+
+## History
+
+- **Re-swept on 2026-09-02, after the landing unit was corrected.** This
+  rule's own extractor grouped direct commits by time gap and, on a
+  squash-landing repository, welded independent pull requests into one
+  increment. A forge-committed commit is now its own increment. R-011's
+  plateau pooling was tried here and reverted the same day: the reasoning rate
+  keeps a gradient at the top, and pooling demoted a 62% band to "below the
+  bar". A divergence surfaced in the same sweep and is
+  recorded in `principles/README.md`: this rule counts code by an extension
+  allowlist where R-011 counts anything not test, doc or noise, so the same
+  landing can sit in different bands under the two sibling rules.

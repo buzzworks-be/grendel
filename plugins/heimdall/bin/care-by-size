@@ -13,12 +13,19 @@ Stratification is the move that is not forbidden. Instead of asking "did this
 150-line changes". The standard stays the target's own; only the comparison
 group narrows from the whole window to changes of comparable size.
 
-Measured before either rule was changed, across three repositories and 304
-landings. Tests rose monotonically with size in all three — 33%→97%, 7%→78%,
-7%→100%. The consequence is concrete: in the 100-299 band one repository
-carried tests on 95% of landings and another on 46%, so an untested 150-line
-landing is a real anomaly in the first and unremarkable in the second. A flat
-threshold cannot tell them apart.
+First measured across three repositories and 304 landings, on a landing unit
+that turned out to weld squash landings together (see FORGE_COMMITTERS), and
+re-swept on the corrected unit across five histories and about 2,180
+landings. The corrected shape: the test rate climbs steeply from the 1-24 band
+(12-30%) through 25-99 (42-72%) to 100-299 (69-86%), then PLATEAUS — above 100
+lines every history sat at 74-80%, and 300-999 and 1000+ moved in no
+consistent direction from 100-299. The consequence for the rules is concrete
+in both directions: in the 25-99 band the five histories straddle the
+convention bar (42% to 72%), so an untested 60-line landing is an anomaly on
+some and unremarkable on others; above 100 lines the bands are one regime,
+and judging them separately only thins the sample — on a single-package
+repository the top two bands held six and two landings. The rules now pool the
+plateau for the convention and still report each band.
 
 Documentation rose too but noisily, and part of that is measurement rather than
 behaviour: a landing whose change IS a document counts as carrying reasoning
@@ -229,14 +236,22 @@ def main():
         if prev is not None and tr < prev - 0.05:
             monotonic = False
         prev = tr
+    plateau = [tally[b] for b in band_labels() if b in tally and int(b.split("-")[0].rstrip("+")) >= 100]
+    pn = sum(v["n"] for v in plateau)
+    if pn:
+        pt = sum(v["test"] for v in plateau) / pn
+        pde = sum(v["doc_eligible"] for v in plateau)
+        pdr = (sum(v["doc"] for v in plateau) / pde) if pde else None
+        w.append(f"{'100+ pooled':<12}{pn:>9}{pt:>10.0%}"
+                 + (f"{pdr:>15.0%}" if pdr is not None else f"{'—':>15}"))
     w.append("")
     w.append("A band below "
              f"{a.min_band} landing(s) is marked thin: its rate is an accident, not a norm.")
     if total:
         w.append("Care rising with size is proportionality — the repository's own, not "
                  "Heimdall's." if monotonic else
-                 "The test rate does NOT rise monotonically here; a stratified rule will "
-                 "find some bands stricter than larger ones.")
+                 "The test rate does NOT rise monotonically here. Above 100 lines that is "
+                 "the usual shape — a plateau — which is why R-011 pools it.")
     w.append("Reasoning excludes doc-dominant landings: a change that IS a document "
              "carries no reasoning about code.")
     sys.stderr.write("\n".join(w) + "\n")

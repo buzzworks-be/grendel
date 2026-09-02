@@ -50,13 +50,21 @@ fix, a version bump, a URI correction. Demanding ceremony of it is the
 over-spending P-5 warns about exactly as loudly as under-spending, and the
 whole value of such a change is that it is cheap.
 
-**Why stratified.** A single threshold asked the same thing of a 100-line
-landing and a 10,000-line one, and nothing at all of a 99-line one. Measured
-across three repositories and 304 landings before either rule was changed, care
-rises with size in every one. The consequence is concrete: in the 100-299 band
-one repository carried tests on 95% of landings and another on 46% — an
-untested 150-line landing is a real anomaly in the first and unremarkable in the
-second, and a flat threshold reports them identically.
+**Why stratified, and why the bands above 100 lines share a rate.** A single
+threshold asked the same thing of a 100-line landing and a 10,000-line one,
+and nothing at all of a 99-line one. First measured across three repositories
+and 304 landings; re-swept on the corrected landing unit across five histories
+and about 2,180 landings, with a different result. The test rate climbs
+steeply from 1-24 (12-30%) through 25-99 (42-72%) to 100-299 (69-86%), then
+**plateaus**: above 100 lines every history sat at 74-80%, and the 300-999 and
+1000+ bands moved in no consistent direction from 100-299. So the 25-99 band
+is judged on its own rate — the five histories straddle the bar there, and an
+untested 60-line landing is an anomaly on some and unremarkable on others —
+while the three bands from 100 lines up are **one regime**: reported
+separately, judged against their pooled rate. Judging them separately bought
+nothing and cost samples where they matter most; on a single-package
+repository the top two bands held six and two landings, so its largest
+changes could not be judged at all.
 
 This is also how P-5 is served without a declaration. Reading stakes off the
 code is forbidden — it would be Heimdall holding an opinion about someone
@@ -166,3 +174,14 @@ Two limitations to state in any case file citing this rule:
 
   Held at `draft`: the floors are borrowed from R-003 rather than calibrated
   here, and test-path detection has been exercised on two repositories.
+
+- **Re-swept on 2026-09-02, after the landing unit was corrected.** The unit
+  had welded squash landings merged within an hour into one; on one history
+  over a year, 722 binned landings became 1,131 and this rule's candidate list
+  grew from 152 to 227. Re-measured across five histories of different landing
+  shapes (~2,180 landings): the gradient the first sweep reported as monotonic
+  is a climb to a plateau at 100 lines. From there the bands are judged
+  against their pooled rate; below, unchanged. The convention bar and band
+  edges were kept — the 25-99 knee straddles the bar on five histories, which
+  is what a bar at the knee looks like. Still `draft`: the pooling boundary was
+  read off five histories, not calibrated against any that had no hand in it.

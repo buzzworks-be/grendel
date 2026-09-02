@@ -52,6 +52,17 @@ BANDS = [(1, 24), (25, 99), (100, 299), (300, 999), (1000, 10 ** 9)]
 # one, and the reason this rule is still draft.
 NO_FINDING_BAND = "1-24"
 
+# Above this many lines the bands are one regime and are judged together.
+# Re-swept on the corrected landing unit across five histories and ~2,180
+# landings: the test rate climbs steeply from 1-24 through 25-99 to 100-299,
+# then sits at 74-80% on every history tried, with 300-999 and 1000+ moving in
+# no consistent direction from 100-299. Splitting the plateau buys nothing and
+# costs samples where they matter most — on a single-package repository the
+# top two bands held six and two landings, so its largest changes could not be
+# judged at all. The bands are still reported one by one; the CONVENTION for
+# the plateau is pooled.
+PLATEAU_FROM = 100
+
 DEFAULT_MIN_BAND = 5      # below this a band's rate is an accident, not a norm
 DEFAULT_CODE_MIN = 100    # retained for --code-min compatibility; see BANDS
 DEFAULT_ACT_GAP = 60      # minutes; direct commits closer than this are one landing
@@ -239,6 +250,11 @@ def main():
         print("R-011: NOT APPLICABLE — no landing carries measurable code.")
         return 0
 
+    plateau = [u for b in band_labels() if int(b.split("-")[0].rstrip("+")) >= PLATEAU_FROM
+               for u in banded[b]]
+    plateau_n = len(plateau)
+    plateau_rate = (sum(1 for u in plateau if u["verified"]) / plateau_n) if plateau_n else 0.0
+
     print(f"{'code lines':<12}{'landings':>9}{'with test':>11}   status")
     findings, inline_counted = [], 0
     for b in band_labels():
@@ -249,15 +265,18 @@ def main():
         verified = [u for u in rows if u["verified"]]
         inline_counted += sum(1 for u in rows if u["inline"])
         rate = len(verified) / n
+        pooled = int(b.split("-")[0].rstrip("+")) >= PLATEAU_FROM
+        jn, jrate = (plateau_n, plateau_rate) if pooled else (n, rate)
+        tag = f" ({PLATEAU_FROM}+ pooled: {plateau_n} @ {plateau_rate:.0%})" if pooled else ""
         if b == NO_FINDING_BAND:
             status = "not judged — too small to owe a check"
-        elif n < a.min_band:
-            status = f"thin ({n} < {a.min_band}) — rate is an accident"
-        elif rate < a.convention_min:
+        elif jn < a.min_band:
+            status = f"thin ({jn} < {a.min_band}) — rate is an accident{tag}"
+        elif jrate < a.convention_min:
             status = (f"below the bar ({a.convention_min:.0%}) — not this "
-                      "repository's habit at this size")
+                      f"repository's habit at this size{tag}")
         else:
-            status = "judged"
+            status = f"judged{tag}"
             findings += [u for u in rows if not u["verified"]]
         print(f"{b:<12}{n:>9}{rate:>10.0%}   {status}")
 
@@ -269,10 +288,11 @@ def main():
     print()
     print("Each band is judged against this repository's own rate at that size, "
           "never against")
-    print("a fixed threshold. A band below the bar is not a pass: it says the "
-          "repository does")
-    print("not test at that size, which is a fact about the repository and not "
-          "about any change.")
+    print(f"a fixed threshold; from {PLATEAU_FROM} lines up the bands are one regime "
+          "and share a rate.")
+    print("A band below the bar is not a pass: it says the repository does not test "
+          "at that size,")
+    print("which is a fact about the repository and not about any change.")
 
     if not findings:
         print()
