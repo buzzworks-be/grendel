@@ -1,6 +1,6 @@
 ---
 name: pulp
-description: By name only.
+description: 
 ---
 
 # Pulp
