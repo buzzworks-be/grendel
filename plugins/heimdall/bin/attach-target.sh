@@ -11,6 +11,11 @@
 #   bin/attach-target.sh             refresh the currently attached target
 
 set -euo pipefail
+# When something fails under set -e, say WHERE and under WHICH bash. Every
+# macOS field report so far carried the symptom and not the line, and each
+# took a guess to fix. bash 3.2 supports an ERR trap; $LINENO and
+# $BASH_VERSION are enough to turn the next report into a diagnosis.
+trap 'echo "heimdall: $(basename "$0") failed at line $LINENO under bash $BASH_VERSION" >&2' ERR
 trap 'rm -rf "${STAGE:-}"' EXIT
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

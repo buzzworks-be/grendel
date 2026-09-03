@@ -14,6 +14,11 @@
 #   bin/check-no-leak          check tracked files and this branch's messages
 
 set -euo pipefail
+# When something fails under set -e, say WHERE and under WHICH bash. Every
+# macOS field report so far carried the symptom and not the line, and each
+# took a guess to fix. bash 3.2 supports an ERR trap; $LINENO and
+# $BASH_VERSION are enough to turn the next report into a diagnosis.
+trap 'echo "heimdall: $(basename "$0") failed at line $LINENO under bash $BASH_VERSION" >&2' ERR
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # This script's own absolute path. --self-test re-invokes THIS file, not the
@@ -49,7 +54,7 @@ scan_tracked() {
     [ -f "$f" ] && files+=("$f")
   done < <(git ls-files -z 2>/dev/null)
   [ "${#files[@]}" -eq 0 ] && return 0
-  printf '%s\0' "${files[@]}" | xargs -0 grep -nIiF -- "$needle" || true
+  printf '%s\0' ${files[@]+"${files[@]}"} | xargs -0 grep -nIiF -- "$needle" || true
 }
 
 # Prove the guard still REFUSES over a planted leak.
@@ -65,6 +70,10 @@ scan_tracked() {
 # The fixture includes a symlink to a directory, because that is what made grep
 # exit non-zero and turned the original sweep blind.
 if [ "${1:-}" = "--self-test" ]; then
+  # The self-test invokes this script expecting it to FAIL (exit 5 over a
+  # planted leak, or a state root inside a repository); the diagnostic ERR
+  # trap would report each of those designed failures as a crash. Off here.
+  trap - ERR
   tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' EXIT
 
@@ -208,6 +217,11 @@ fi
 # matches on the owner alone — equally true of every repository that account
 # owns, so it identifies nothing — and blocks the close of every such case.
 SELF_ORIGIN="$(git -C "$ROOT" remote get-url origin 2>/dev/null || true)"
+# Arrays are expanded as ${arr[@]+"${arr[@]}"} throughout. Under set -u, bash
+# before 4.4 treats an EMPTY array's "${arr[@]}" as an unbound variable and
+# exits — so on macOS a run with no ref-name needles, or the self-test's
+# fixture with few files, died on the expansion itself. The idiom expands to
+# nothing when the array is empty, on every bash.
 # `while read`, not mapfile: mapfile is bash 4+ and macOS ships bash 3.2.
 # There it is a command-not-found, and under `set -e` this guard dies
 # before deriving a single needle — so on macOS the leak sweep could not
@@ -324,7 +338,7 @@ NEEDLES=()
 REF_NEEDLES=()
 DROPPED=()
 SELF_OWNER_DROPPED=""
-for line in "${DERIVED[@]}"; do
+for line in ${DERIVED[@]+"${DERIVED[@]}"}; do
   case "$line" in
     "N	"*) NEEDLES+=("${line#N	}") ;;
     "R	"*) REF_NEEDLES+=("${line#R	}") ;;
@@ -335,7 +349,7 @@ done
 
 if [ "${#DROPPED[@]}" -gt 0 ]; then
   echo "heimdall: note — dropped as too generic to identify anything:" \
-       "${DROPPED[*]}" >&2
+       ${DROPPED[*]+"${DROPPED[*]}"} >&2
   echo "heimdall: the remaining identifiers still cover this target; if one of" >&2
   echo "those words IS the target's distinctive name, sweep for it by hand." >&2
 fi
@@ -358,7 +372,7 @@ fi
 fail=0
 
 # 1. Tracked files. Untracked ones cannot be pushed; ignored ones are the point.
-for needle in "${NEEDLES[@]}"; do
+for needle in ${NEEDLES[@]+"${NEEDLES[@]}"}; do
   hits="$(scan_tracked "$needle")"
   if [ -n "$hits" ]; then
     echo "$hits" >&2
@@ -370,7 +384,7 @@ done
 # 2. Commit messages on this branch but not on the default branch.
 base="$(git rev-parse --verify -q origin/main 2>/dev/null || echo "")"
 range="${base:+$base..}HEAD"
-for needle in "${NEEDLES[@]}"; do
+for needle in ${NEEDLES[@]+"${NEEDLES[@]}"}; do
   hits="$(git log --format='%H %s%n%b' "$range" 2>/dev/null | grep -niF -- "$needle" || true)"
   if [ -n "$hits" ]; then
     echo "$hits" >&2
@@ -386,7 +400,7 @@ done
 refs="$(git for-each-ref --format='%(refname:short)' refs/heads refs/remotes 2>/dev/null)"
 remote_refs="$(git ls-remote --heads origin 2>/dev/null | awk '{print $2}')" || remote_refs=""
 [ -z "$remote_refs" ] && echo "heimdall: note — could not list remote heads; ref sweep is local-only." >&2
-for needle in "${NEEDLES[@]}" "${REF_NEEDLES[@]}"; do
+for needle in ${NEEDLES[@]+"${NEEDLES[@]}"} ${REF_NEEDLES[@]+"${REF_NEEDLES[@]}"}; do
   hits="$(printf '%s\n%s\n' "$refs" "$remote_refs" | grep -iF -- "$needle" | sort -u || true)"
   if [ -n "$hits" ]; then
     echo "$hits" | sed 's/^/  /' >&2

@@ -29,6 +29,11 @@
 # Exit: 7 sweep failed, 8 readings held with nothing to sweep against.
 
 set -euo pipefail
+# When something fails under set -e, say WHERE and under WHICH bash. Every
+# macOS field report so far carried the symptom and not the line, and each
+# took a guess to fix. bash 3.2 supports an ERR trap; $LINENO and
+# $BASH_VERSION are enough to turn the next report into a diagnosis.
+trap 'echo "heimdall: $(basename "$0") failed at line $LINENO under bash $BASH_VERSION" >&2' ERR
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Code root above; state root below. In a checkout they are the same directory;
@@ -81,7 +86,7 @@ if [ ! -d ".heimdall" ] || { [ ! -f ".heimdall/target.json" ] && [ ! -d ".heimda
   echo "heimdall: refusing to report a clean close." >&2
   echo >&2
   echo "$total reading(s) are on this machine, and they carry a target:" >&2
-  printf '  %s\n' "${held[@]}" >&2
+  printf '  %s\n' ${held[@]+"${held[@]}"} >&2
   echo >&2
   echo "Nothing is attached, so bin/check-no-leak has no identifiers to search" >&2
   echo "for. It would exit 0 without having looked, and this is the one state in" >&2
@@ -138,9 +143,9 @@ fi
 if [ "${#case_files[@]}" -gt 0 ]; then
   CODENAME_UC="$(printf %s "$codename" | tr '[:lower:]' '[:upper:]')"   # bash 3.2 has no ${x^^}
   echo "heimdall: ${#case_files[@]} case file(s) in ${CODENAME_UC}:" >&2
-  printf '  %s\n' "${case_files[@]}" >&2
+  printf '  %s\n' ${case_files[@]+"${case_files[@]}"} >&2
   if [ "$purge" -eq 1 ]; then
-    rm -f -- "${case_files[@]}"
+    rm -f -- ${case_files[@]+"${case_files[@]}"}
     echo "heimdall: case files purged (--purge-case-files)." >&2
   else
     echo "heimdall: kept. They carry the target — hand them over, then re-run" >&2

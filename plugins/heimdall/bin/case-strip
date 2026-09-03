@@ -65,12 +65,13 @@ LEGEND = [
 ]
 
 # The block is meant to survive a terminal, a ticket field and a chat message
-# without reflowing, so every line stays inside 80 display columns. At eleven
-# rules the widest line is 78. Each further rule costs four columns, so around
-# fourteen the header will pass 80 and the label column has to shrink or the
-# strip has to wrap — a real decision, deferred until there are that many rules.
-WIDTH_BUDGET = 80
-
+# without reflowing, so every line stays inside 80 display columns. Each rule
+# costs four columns, so the rules are rendered in BLOCKS of at most ten: a
+# header and one row per reading for R-001 to R-010, a blank line, the same
+# for R-011 to R-020, and so on. Severity sits on the last block only, once
+# per reading. At twenty-six rules a single line ran to 132 columns and
+# wrapped into noise on the first terminal that showed it.
+BLOCK = 10
 
 def rule_ids():
     """Every rule id this strip may have to render — active and retired.
@@ -212,22 +213,31 @@ def main():
         return 0
 
     ids = rule_ids()
-    nums = [i.split("-")[1] for i in ids]
     label_w = 22
-
-    print(f"{codename.upper():<{label_w}}R- " + " ".join(f"{n:>3}" for n in nums))
+    rows = []
     for f in files:
         fm = frontmatter(f)
         date, head = short(fm)
-        cells = row(fm, ids)
         # Case files written before the rename carry "verdict" for what is now
         # "severity". Read them rather than show a shrug: they are delivered
         # artifacts and rewriting them to match a newer schema is the drift this
         # repository exists to notice.
         sev = fm.get("severity") or fm.get("verdict") or "?"
-        print(f"{date} {head:<{label_w - 11}}   "
-              + " ".join(f"{c:>3}" for c in cells)
-              + f"   {sev}")
+        rows.append((date, head, row(fm, ids), sev))
+
+    blocks = [ids[i:i + BLOCK] for i in range(0, len(ids), BLOCK)]
+    for b, block_ids in enumerate(blocks):
+        nums = [i.split("-")[1] for i in block_ids]
+        label = codename.upper() if b == 0 else ""
+        print(f"{label:<{label_w}}R- " + " ".join(f"{n:>3}" for n in nums))
+        last = b == len(blocks) - 1
+        for date, head, cells, sev in rows:
+            seg = cells[b * BLOCK:(b + 1) * BLOCK]
+            print(f"{date} {head:<{label_w - 11}}   "
+                  + " ".join(f"{c:>3}" for c in seg)
+                  + (f"   {sev}" if last else ""))
+        if not last:
+            print()
 
     missing = sum(1 for f in files for c in row(frontmatter(f), ids) if c == "!")
     print()
