@@ -61,3 +61,12 @@ of a reading is the user's call. Default is to keep and say so.
 
 Heimdall is cold again: `/open-case` opens the next one. Nothing about the previous target remains outside any case files
 deliberately kept.
+
+## Shells
+
+A case directory with bookkeeping and no reading — an attach that never
+profiled, or readings handed over and deleted by hand — is an empty shell.
+It carries nothing about any target, but it holds a codename out of the
+wordlist for ever and is listed as held at every close. The closer removes
+every such shell at every close and names what it removed; nothing with a
+case file in it is ever touched this way. Say what was tidied.

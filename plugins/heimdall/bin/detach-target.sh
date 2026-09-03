@@ -62,6 +62,35 @@ if [ "$#" -gt 1 ]; then
   exit 2
 fi
 
+# Empty shells: a case directory holding bookkeeping and no reading. Left by
+# an attach that never profiled, or by readings handed over and deleted by
+# hand. A shell carries nothing about any target — the codename is drawn, the
+# metadata is dates and a count — but each one holds a name out of the
+# wordlist for ever and is listed as "held" at every close, and the only way
+# to tidy one was by hand. The closer does it: any case directory with no
+# case file is removed and named, except the case being closed right now,
+# whose directory is the record that it was.
+tidy_shells() {  # $1: codename to leave alone, or empty
+  python3 - "$STATE" "${1:-}" <<'PY2' || true
+import shutil, sys
+from pathlib import Path
+root, keep = Path(sys.argv[1]), sys.argv[2]
+cases = root / "cases"
+gone = []
+if cases.is_dir():
+    for d in sorted(cases.iterdir()):
+        if not d.is_dir() or d.name == keep or d.name.startswith("_"):
+            continue
+        if any(d.glob("*.md")):
+            continue
+        shutil.rmtree(d)
+        gone.append(d.name.upper())
+if gone:
+    print("heimdall: tidied " + str(len(gone)) + " empty case shell(s), no readings in any: "
+          + ", ".join(gone), file=sys.stderr)
+PY2
+}
+
 # Readings held on this machine, by codename. Safe to print: a codename is
 # drawn at random and names no repository — that is what it is for.
 held=()
@@ -79,6 +108,7 @@ for d in cases/*/; do
 done
 
 if [ ! -d ".heimdall" ] || { [ ! -f ".heimdall/target.json" ] && [ ! -d ".heimdall/target.git" ]; }; then
+  tidy_shells ""
   if [ "$total" -eq 0 ]; then
     echo "heimdall: no case open — nothing attached, no readings held." >&2
     exit 0
@@ -157,6 +187,7 @@ rm -rf .heimdall
 # Files under other codenames are invisible from here otherwise, and an
 # operator who purges one case can believe the machine is clean when it is not.
 # Codenames are safe to print; they name no repository.
+tidy_shells "${codename:-}"
 python3 - "$STATE" "${codename:-}" <<'PY' || true
 import sys
 from pathlib import Path
@@ -173,8 +204,9 @@ if cases.is_dir():
     if others:
         print("heimdall: other cases still hold files on this machine: "
               + ", ".join(others), file=sys.stderr)
-        print("heimdall: each is closed separately — attach nothing to purge "
-              "them; delete by hand once delivered.", file=sys.stderr)
+        print("heimdall: each is closed separately — re-attach its target to close "
+              "it, or hand its files over and delete them; the shell is tidied at "
+              "the next close.", file=sys.stderr)
 PY
 
 echo "heimdall: case closed — target detached, checkout is target-agnostic again." >&2
