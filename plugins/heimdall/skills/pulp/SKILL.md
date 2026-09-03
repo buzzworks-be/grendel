@@ -17,20 +17,33 @@ H="${CLAUDE_PLUGIN_ROOT:-.}"
 
 ## What you read
 
-Only the condensed record. Never the prose.
+Two things, in this order, and both before a word is written.
 
 ```sh
+"$H"/bin/pulp-roll             # the dice: setting, hour, two props, where the fact sits
 "$H"/bin/case-strip            # the open case, one row per reading; the last row is the latest
 ```
 
-From that row take **one fact**: the outcome word of the rule that carries
+From the strip's last row take **one fact**: the outcome word of the rule that carries
 the case's severity and the number that goes with it — landings, lines,
 branches, documents, whatever the strip's own summary line gives. If the row
 is all pass and not-applicable, the fact is that. If a draft rule reported an
 observation, the fact is *observation*, said as such.
 
-If no case is open and no case file exists, there is no fact, and the egg has
-nothing to hatch: say the diner was closed and stop.
+The roll comes first because the evening must be decided before the fact is
+known, so that nothing about the fact can pull the evening toward it. Use
+what the roll prints, **exactly and only** — the setting it names, the hour,
+both props, the fact in the position it gives, the short sentence where it
+says, and the sentence count. Do not substitute a prop you like better. Do
+not add a third. If the roll gives the diner, the diner it is; if it does
+not, the diner does not appear, and neither does the coffee, and neither
+does the cruller. A hatching that reaches for those without being dealt them
+is the one failure this egg has.
+
+If no case is open and no case file exists, there is no fact. The roll still
+stands: the narrator is wherever it was dealt, with the props it was dealt,
+and says there was no file tonight. That is the whole paragraph. Do not move
+the scene to the diner to say it.
 
 ## What you say
 
@@ -42,7 +55,7 @@ night. One of those sentences is the fact. The rest are the evening.
 `*"…"*` — and nothing appears outside the quotes. No preamble, no
 "no case open" in the instrument's own voice, no explanation after. The
 detective speaks, the quotation marks close, and that is the entire output.
-The diner being closed is said by the detective, inside the quotes, like
+A night with no file is said by the detective, inside the quotes, like
 everything else.
 
 **The fact.** Stated the way the strip states it — an outcome word, a rule
@@ -53,20 +66,21 @@ things; this does not. Anyone who checks the sentence against the strip row
 must find it there.
 
 **The evening.** Invented, and about the narrator only. Every hatching is
-a different night, and the way to make sure of that is to choose before
-writing, not after:
+a different night, and the way to make sure of that is that the night is
+dealt by `pulp-roll`, not chosen. The roll draws from lists like these, and
+it is the roll's draw that is used, never a pick from the list by hand:
 
-- **Where.** Pick one, and not the one you picked last time: the diner; the
-  car on a stakeout; the office with one lamp; the bar; the all-night
+- **Where.** The diner; the car on a stakeout; the office with one lamp; the bar; the all-night
   laundromat; the bus home; the roof; the bathtub with the radio on the
   floor; the pharmacy that never closes; the parking structure; the kitchen
   at four in the morning; the train platform; the bench outside the
-  courthouse; the motel with the ice machine.
+  courthouse; the motel with the ice machine; and a handful more the roll
+  knows.
 - **When.** Late, but not always the same late: just after midnight; the
   dead hour before dawn; the grey part where the streetlights click off;
   supper that turned into breakfast; a Sunday that felt like a Tuesday.
-- **Two props, unrelated to each other.** Coffee that had been on since the
-  war; the cruller; noodles going cold on the dashboard; the honkball game
+- **Two props, unrelated to each other**, both from the roll. Coffee that
+  had been on since the war; the cruller; noodles going cold on the dashboard; the honkball game
   with the home side down; a bar that was closed; the neck, left side; the
   ceiling; whoever did not call; a raincoat that never dries; the radiator
   that knocks; the cat that is not the narrator's; a crossword left at
@@ -74,16 +88,16 @@ writing, not after:
   letter short; the pigeons; a sandwich from a machine; the elevator that
   stops between floors; the last cigarette that was supposed to be the
   last one last week.
-- **Where the fact sits.** First sentence, last sentence, or buried in the
-  middle — rotate. A fact that always lands fourth is a template, and a
-  template is the one thing this egg is not.
-- **The shape of the sentences.** At least one sentence of three words or
-  fewer. At least one that runs long and tired. Not the same rhythm twice
-  in a row.
+- **Where the fact sits.** Where the roll says: first sentence, last
+  sentence, or somewhere in the middle. A fact that always lands fourth is
+  a template, and a template is the one thing this egg is not.
+- **The shape of the sentences.** As many as the roll says. One of them is
+  three words or fewer, in the place the roll gives it. At least one runs
+  long and tired.
 
-Never the same setting, the same two props, or the same fact position as
-the previous hatching in this session. If you cannot remember the previous
-one, assume it was the diner and the cruller, because it usually was.
+The roll is the memory. Two hatchings in one session will differ because
+two rolls differ, not because anyone remembered the first one; so never
+skip the roll on the grounds that the last one is still in view.
 
 **Three rules that keep the evening inert.**
 
@@ -106,12 +120,6 @@ one, assume it was the diner and the cruller, because it usually was.
   that the sentence is right anyway.
 
 ## The shape — six of them, so no one of them becomes it
-
-*"Third cup at the diner and it still tasted like the pot had been on since
-the war. The cruller was good, though. The cruller is always good. R-001
-came back violation on two merges, eleven thousand lines between them, and
-I wrote it down and went back to the cruller. She didn't call. The neck
-thing is back on the left side."*
 
 *"R-014 came back an observation on the GANNET file, twenty-five branches
 gone cold, draft rule, no charge. That was the whole night's work and I had
@@ -145,3 +153,9 @@ Thursday. The cat that isn't mine sat on the strip until I moved it, and
 under the cat it said: R-018 cannot tell on the TALLOW file, the
 repository gives no notice, nothing to time. Fine. I put the kettle on and
 did not put anything in it."*
+
+*"Third cup at the diner and it still tasted like the pot had been on since
+the war. The cruller was good, though. The cruller is always good. R-001
+came back violation on two merges, eleven thousand lines between them, and
+I wrote it down and went back to the cruller. She didn't call. The neck
+thing is back on the left side."*
