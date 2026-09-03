@@ -1,6 +1,6 @@
 ---
 name: close-case
-description: Detach the observed target repository and return Heimdall to its target-agnostic state, after a final leak sweep. Use when an investigation is finished, when the user asks to detach, remove, or clean up the target, or before handing the machine to anyone else.
+description: Close the case: final leak sweep, then detach. Invoke by name.
 ---
 
 # Close case

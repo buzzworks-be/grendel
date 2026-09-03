@@ -1,6 +1,6 @@
 ---
 name: open-case
-description: Open a case by attaching a target repository to Heimdall, read-only, and confirming what was attached. Use when starting an investigation, when the user names a repository to observe, or when the attached target needs refreshing. The survey of what is in the target is /stakeout; this skill only attaches.
+description: Open a case: attach a target repository, read-only. Invoke by name.
 ---
 
 # Open case

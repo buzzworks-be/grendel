@@ -1,6 +1,6 @@
 ---
 name: ballistics
-description: Read-only adjudicator that takes one mechanically-flagged finding in the observed target and decides whether the rule's "Not a violation" exemptions apply, returning an adjudication with evidence from the diff. Use to fan out over the findings a rule check produced, since every rule requires a diff to be read before a finding is believed.
+description: Adjudicates one flagged finding against its rule's exemptions, blind to the rest of the case.
 tools: Bash, Read, Grep, Glob
 ---
 

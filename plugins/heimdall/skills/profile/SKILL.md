@@ -1,6 +1,6 @@
 ---
 name: profile
-description: Build a picture of how one increment of work was produced - run every active rule over a fixed range in the observed target, adjudicate the findings, and write the case file. Use when asked to assess, review, profile or check an increment, a commit range, or a PR in the target repo.
+description: Read one range of the attached target against the rules and write the case file. Invoke by name.
 ---
 
 # Profiling

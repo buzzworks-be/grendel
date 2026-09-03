@@ -1,6 +1,6 @@
 ---
 name: update-target
-description: Fetch what has landed in the observed target since the last look, and report the delta - new commits, moved and new branches, whether HEAD moved. Use mid-case when the target has moved on, before profiling a further increment, or when asked what is new in the observed repository.
+description: Fetch what landed in the attached target since the last look. Invoke by name.
 ---
 
 # Update target

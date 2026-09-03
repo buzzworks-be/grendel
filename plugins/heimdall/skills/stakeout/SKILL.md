@@ -1,6 +1,6 @@
 ---
 name: stakeout
-description: Survey the attached target repository and report its shape - history, process readings, workflow facts, observer-awareness, stated conventions. Read-only and re-runnable. Use after /open-case, before profiling an increment, or when asked what the target looks like or how work in it has been going.
+description: Survey the attached target. Invoke by name.
 ---
 
 # Stakeout

@@ -1,6 +1,6 @@
 ---
 name: recap
-description: Orient in one screen - what Heimdall is, the cast of skills in the order a case runs, and what is currently true. Use when starting a session, when someone asks what Heimdall is or what it can do, or when you need to remember which skill does what.
+description: One screen: what Heimdall is and what is currently true.
 ---
 
 # Recap
