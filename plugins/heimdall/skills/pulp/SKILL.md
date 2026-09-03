@@ -105,7 +105,7 @@ one, assume it was the diner and the cruller, because it usually was.
 - Let the fact outrun the strip. The joke is that nobody will check, and
   that the sentence is right anyway.
 
-## The shape — three of them, so no one of them becomes it
+## The shape — six of them, so no one of them becomes it
 
 *"Third cup at the diner and it still tasted like the pot had been on since
 the war. The cruller was good, though. The cruller is always good. R-001
@@ -125,3 +125,23 @@ the office lamp had quit: every rule on the TALLOW file pass or not
 applicable, seven of them, clean. Folded a shirt wrong. Left it wrong. The
 neon outside is missing its second letter and I have stopped reading it as
 a word."*
+
+*"Motel. The ice machine down the hall drops a load every eleven minutes
+and I have started counting on it. Somewhere around the fourth load I got
+the strip out: R-004 came back violation on the HARBOUR file, six direct
+landings, nineteen thousand lines. Wrote it on the pad by the phone because
+the pad was there. The raincoat is on the chair not drying, the way it
+never dries. Load five."*
+
+*"Twenty-five branches. Cold. R-014, an observation, draft. I said it to the
+windshield twice so I'd remember it, then said it to the noodles, which
+were past helping. Home side down by two in the ninth and the away station
+cut out at the pitch, the way it does. She didn't call. The neck is
+fine, actually, which worries me more."*
+
+*"Sunday that felt like a Tuesday. Kitchen, four a.m., the radiator
+knocking like somebody wanted in. Crossword stuck at three across since
+Thursday. The cat that isn't mine sat on the strip until I moved it, and
+under the cat it said: R-018 cannot tell on the TALLOW file, the
+repository gives no notice, nothing to time. Fine. I put the kettle on and
+did not put anything in it."*
