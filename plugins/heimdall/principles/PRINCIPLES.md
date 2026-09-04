@@ -329,7 +329,8 @@ the presence of a test file as evidence of adequate testing; and expecting tests
 in a repository that has not established the practice.
 
 **Derived rules:** R-011 (substantial implementation arrives with its
-verification).
+verification); R-027 (a landing that opens new ways through the code arrives
+with its verification).
 
 ---
 

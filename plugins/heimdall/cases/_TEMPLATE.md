@@ -47,6 +47,7 @@ outcomes:               # every rule that existed at principles_sha, no exceptio
   R-024: cannot-tell
   R-025: cannot-tell
   R-026: cannot-tell
+  R-027: not-applicable
 ---
 
 # Case file — <range>

@@ -540,3 +540,42 @@ twelve points under the slowest, review interval uncorrelated with size in
 every window.
 
 **Derived rules:** R-021, R-022, R-023 (P-14); R-024, R-025 (P-15).
+
+---
+
+## S-17. Decision points — how much branching a landing added
+
+**Measure:** per landing, the number of decision points in the code lines it
+added less those in the lines it removed — `if`, loops, `case`, `catch`,
+boolean operators, the ternary, a `match` arm — counted by token on the diff
+of code files, per extension family, skipping comment lines and counting
+nothing in configuration. That is McCabe's cyclomatic number computed the
+only way a bare clone allows: on the change, with no parser, as a count of
+how many new ways through the code the landing opened. Reported by line band
+(the spread of decisions at each size, and the rank correlation between the
+two axes), by decision band (whether a test arrived, beside the same rate by
+line band), as the landings small in lines and large in decisions, and per
+top-level area (share of decisions added against share of lines, and the
+care in each). `bin/decision-points` computes it.
+
+**Suggests:** whether the repository's care follows how much a change could
+go wrong, where line count cannot see it; and where the repository's
+branching concentrates, which is a gradient of stakes it never declared.
+
+**How it lies:** it is a token count, not a graph. A decision keyword inside
+a string counts; a generated switch counts unless the classifier knows the
+file is generated; a language the family table does not know is counted by
+a generic pattern that misses its own keywords and matches English. Net of
+removals is the measure because gross count listed exactly the wrong things
+first — a substitution of one atomic API for another, a lint fix, a
+linter enabled across ten files — but net also hides a rewrite that replaces
+thirty decisions with thirty different ones, which is R-013's shape and not
+this one's. And the number is a proxy for lines for most software (Shepperd
+1988) with high variance at the level of one change (Landman et al. 2016);
+measured here on four histories, the rank correlation between lines and net
+decisions per landing ran from +0.31 to +0.60, which is the second axis
+carrying something and not everything. What it cannot say is anything about
+whether the branching was warranted, well-shaped or understood: that is a
+judgement about code, and outside this instrument.
+
+**Derived rule:** R-027.
