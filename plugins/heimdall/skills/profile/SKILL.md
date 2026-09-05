@@ -187,6 +187,94 @@ The case file must let someone re-derive your conclusion without rerunning you,
 and without access to Heimdall itself. That is why the template asks you to
 quote what each violated rule requires rather than citing an id alone.
 
+## Offer a chart, never emit one
+
+After the hand-over, and only then, look at the strip row you just wrote and
+offer the charts that row makes relevant (`docs/graphics.md`). One line each,
+by name, saying what the chart would show **on this reading** — not what the
+chart is in general. Draw only the ones the reader picks. A row of passes and
+not-applicables offers nothing, and the offer is skipped in silence.
+
+| Outcome on the row | Chart offered |
+|---|---|
+| R-001, R-004, R-006 or R-007 as violation, or R-006/R-007 as cannot tell on a bursty window | Landing timeline |
+| R-003, R-011 or R-027 as violation or observation, or stood down against a band worth seeing | Care by size band |
+| Any of R-021 to R-025 engaged, or `care-over-time` reporting a drift either way | Care over time, risk windows shaded |
+| R-023 as observation, or a size–interval correlation reported near zero | Size against interval |
+| R-014 or R-015 as observation, or a rising stock in S-9/S-10 | Stocks of what did not finish |
+
+Offer only what you can draw. Until `bin/case-charts` exists, that is the
+three bar-and-line shapes — care by size band, care over time, the stocks —
+as `mermaid` blocks built from the extractor's printed numbers, written to a
+companion file `<id>.charts.md` beside the case file, never into the case
+file itself. The timeline and the scatter are not drawable without the
+script; do not offer them, and do not hand-draw an SVG.
+
+The same rules as the notes: the codename and rule ids in titles, never a
+path or anything from the target; no author anywhere; no colour that grades;
+a draft rule's observation drawn in the same muted style as a signal with no
+rule. The companion file is gitignored with the case and handed over the same
+way.
+
+**An offer, worked.** The strip row for the reading just written, with
+invented figures:
+
+```
+2026-09-04  R-001 ✗  R-002 –  R-003 ✓  R-004 –  R-005 ✓  R-006 ?  R-007 ✓  R-008 –  R-009 ·  R-010 ·
+            R-011 ·  R-012 ·  R-013 ·  R-014 –  R-015 –  R-016 ·  R-017 –  R-018 –  R-019 –  R-020 ·
+            R-021 ~  R-022 ~  R-023 ·  R-024 ~  R-025 ~  R-026 ~  R-027 ·                    warning
+```
+
+R-001 came back violation and R-006 cannot tell, so the timeline would be
+relevant, but it is not drawable yet and is not offered. R-011 and R-027
+are observations, so care by size band is. Nothing under P-10 or P-14
+engaged. The offer is two lines and a question:
+
+> Two charts would show something on this reading. **Care by size band**:
+> the test rate climbs from a third at 1-24 lines to nine in ten at 25-99,
+> with the two untested landings sitting in the band where the convention
+> holds. **Care over time** is not offered: no drift was reported. Draw the
+> first?
+
+If the reader says yes, the companion file `<id>.charts.md` gets:
+
+````markdown
+## TALLOW — a test arrived with the landing, by size band
+
+Reading of 2026-09-04, 156 landings, window 2025-09-01 to 2026-09-01.
+Bars are the share of landings in each band that changed a test file or
+added an inline test; the line is the convention bar. The 100+ bands are
+one pooled regime. A band under five landings is marked thin.
+
+```mermaid
+xychart-beta
+    title "TALLOW · R-011 · test rate by line band"
+    x-axis ["1-24 (115)", "25-99 (30)", "100-299 (11)", "300-999 (0, thin)", "1000+ (0, thin)"]
+    y-axis "share of landings, %" 0 --> 100
+    bar [55, 90, 100, 0, 0]
+    line [50, 50, 50, 50, 50]
+```
+
+R-027 on the same reading, the other axis: net decisions added.
+
+```mermaid
+xychart-beta
+    title "TALLOW · R-027 · test rate by decision band"
+    x-axis ["0 (64)", "1-4 (61)", "5-14 (23)", "15-39 (6, thin)", "40+ (2, thin)"]
+    y-axis "share of landings, %" 0 --> 100
+    bar [41, 74, 96, 100, 100]
+    line [50, 50, 50, 50, 50]
+```
+````
+
+What the example keeps out: no author, no path, no colour instruction, no
+word that grades. The thin bands are drawn and labelled thin rather than
+dropped, because a dropped band reads as a clean one. A care-over-time
+chart is the same shape with windows on the x-axis, a bar series for the
+test rate and a second for reasoning, and a risk window marked in its
+label (`"2026-Q1 · release"`) because the block cannot shade; the stocks
+chart puts the surviving stock as bars and what was begun as a line.
+
 ## When run as a workflow step
 
 When this skill runs as a step in an orchestrated workflow, three things change
@@ -203,6 +291,9 @@ and nothing else does:
   records for reading-window findings, production-time evidence for pace
   findings. List in the case file what was provided and which findings it
   decided. No bundle, no lowered bar: those findings stay "cannot tell".
+- **Charts**: there is nobody to offer to, so draw none — unless the tasking
+  names one by its name in `docs/graphics.md`, in which case draw that one
+  and no other.
 
 ## Honesty
 
