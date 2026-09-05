@@ -147,20 +147,51 @@ def principle_rows():
     return out
 
 
-def frame_caption(n):
+def frame_rows(n):
+    """(label, text) rows: each rule with its title, each principle with its
+    title, then the principle's signature and what it reads."""
     rules = rule_titles(); prin = principle_rows()
     _, rids, pids = CHARTS[n]
-    parts = [f"**{r}** {rules.get(r, '')}" for r in rids]
-    for p in pids:
-        t, sig, reads = prin.get(p, ("", "", ""))
-        parts.append(f"**{p}** {t}")
+    rows = [(r, rules.get(r, "")) for r in rids]
+    rows += [(p, prin.get(p, ("", "", ""))[0]) for p in pids]
     sigs = sorted({prin[p][1] for p in pids if p in prin and prin[p][1]})
     reads = sorted({prin[p][2] for p in pids if p in prin and prin[p][2]})
     if sigs or reads:
-        parts.append(f"signature: {' · '.join(sigs).lower()}; reads: {' · '.join(reads).lower()}")
+        rows.append(("signature", " · ".join(sigs).lower()))
+        rows.append(("reads", " · ".join(reads).lower()))
     else:
-        parts.append("signature and reads: not available on this install (principles/README.md missing)")
-    return " — ".join(parts)
+        rows.append(("signature, reads", "not available on this install (principles/README.md missing)"))
+    return rows
+
+
+def frame_table(n):
+    """The frame as a markdown table, for the companion file."""
+    out = ["| | |", "|---|---|"]
+    for label, text in frame_rows(n):
+        out.append(f"| **{label}** | {text} |")
+    return "\n".join(out)
+
+
+def with_frame(svg, name, title, rows):
+    """The chart with its frame drawn above it, so the picture says what it is
+    even when it travels without its companion text."""
+    line_h, pad = 15, 12
+    head_h = pad + 20 + len(rows) * line_h + pad
+    parts = [f'<rect x="0" y="0" width="{svg.w}" height="{head_h + svg.h}" fill="{PAPER}"/>']
+    y = pad + 14
+    parts.append(f'<text x="16" y="{y}" font-family="{FONT}" font-size="13" fill="{INK}" font-weight="500">'
+                 f'{name} — {title}</text>')
+    y += 6
+    for label, text in rows:
+        y += line_h
+        esc = lambda t: t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        parts.append(f'<text x="16" y="{y}" font-family="{MONO}" font-size="10.5" fill="{INK}" font-weight="500">{esc(label)}</text>')
+        parts.append(f'<text x="112" y="{y}" font-family="{FONT}" font-size="10.5" fill="{INK2}">{esc(text)}</text>')
+    parts.append(f'<line x1="16" y1="{head_h - 4}" x2="{svg.w - 16}" y2="{head_h - 4}" stroke="{RULE}" stroke-width="0.8"/>')
+    inner = "".join(svg.parts)
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {svg.w} {head_h + svg.h}" '
+            f'width="{svg.w}" height="{head_h + svg.h}" font-family="{FONT}">'
+            + "".join(parts) + f'<g transform="translate(0,{head_h})">' + inner + "</g></svg>")
 
 
 # ---- a small SVG writer ------------------------------------------------------
@@ -631,14 +662,30 @@ def main():
         svg, cap = chart_stocks(a, ref, load("marker-debt"))
 
     title, _, _ = CHARTS[n]
-    path = out / f"{rid}-chart-{n}.svg"
-    path.write_text(svg.render())
     name = codename()
-    print(f"## {name} — {title}\n")
-    print(frame_caption(n) + "\n")
-    print(f"![{name}: {title}]({path.name})\n")
-    print(cap + "\n")
+    rows = frame_rows(n)
+    path = out / f"{rid}-chart-{n}.svg"
+    path.write_text(with_frame(svg, name, title, rows))
+
+    block = (f"## {name} — {title}\n\n{frame_table(n)}\n\n"
+             f"![{name}: {title}]({path.name})\n\n{cap}\n")
+    # The companion file is written here, not pasted: the first field runs
+    # dropped the frame between stdout and the file. One section per chart,
+    # replaced in place when the same chart is drawn again for this reading.
+    companion = out / f"{rid}.charts.md"
+    marker = f"<!-- chart {n} -->"
+    section = f"{marker}\n{block}\n"
+    text = companion.read_text() if companion.exists() else f"# {name} — charts\n\n"
+    if marker in text:
+        head, rest = text.split(marker, 1)
+        nxt = rest.find("<!-- chart ")
+        text = head + section + (rest[nxt:] if nxt >= 0 else "")
+    else:
+        text = text.rstrip("\n") + "\n\n" + section
+    companion.write_text(text)
+    print(block)
     sys.stderr.write(f"case-charts: wrote {path}\n")
+    sys.stderr.write(f"case-charts: companion {companion} (section for chart {n} written)\n")
 
 
 if __name__ == "__main__":

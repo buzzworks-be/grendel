@@ -231,10 +231,16 @@ Draw with the script, never by hand:
 "$H"/bin/case-charts <n> --since <base date> --until <head date>    # n = 1..5, per the table above
 ```
 
-It writes one SVG into the case directory and prints the markdown to paste
-into the companion file `<id>.charts.md` beside the case file — never into
-the case file itself. Hand the SVG and the companion file over the same way
-as the case file: sent, and their absolute paths spoken. The markdown it prints already carries the rule and
+It writes one SVG into the case directory **and writes the companion file
+itself**, `<id>.charts.md` beside the case file: one section per chart, with
+the frame as a table — each rule and its title, each principle and its
+title, the signature and what it reads — the image, and the figures the
+chart is read against. Pass `--id <id>` so the files sit with the reading.
+There is nothing to paste and nothing to write by hand; the same frame is
+drawn into the SVG's header, so the picture says what it is even on its
+own. Never put a chart into the case file itself. Hand the SVG and the
+companion file over the same way as the case file: sent, and their
+absolute paths spoken. The markdown it prints already carries the rule and
 principle titles, the signature and what it reads, and the figures the chart
 is read against; add nothing above it and nothing that grades below it. For
 chart 5's branch panel, run `"$H"/bin/open-ended-work --record` first so the
@@ -267,15 +273,18 @@ Nothing under P-10 or P-14 engaged. The offer is two lines and a question:
 > untested landings in the band where the convention holds. Draw either?
 
 If the reader says yes to the second, `case-charts 2` writes the SVG and
-prints the companion block, which begins:
+the companion file, whose section for it begins:
 
 ````markdown
 ## TALLOW — Care by size band
 
-**R-011** Substantial implementation arrives with its verification — **R-027**
-A landing that opens new ways through the code arrives with its
-verification — **P-8** Where the repository verifies its work, code arrives
-with its verification — signature: synthetic pace; reads: content
+| | |
+|---|---|
+| **R-011** | Substantial implementation arrives with its verification |
+| **R-027** | A landing that opens new ways through the code arrives with its verification |
+| **P-8** | Where the repository verifies its work, code arrives with its verification |
+| **signature** | synthetic pace |
+| **reads** | content |
 
 ![TALLOW: Care by size band](2026-09-04-3f1c2a9-b7d40e1-chart-2.svg)
 
@@ -286,8 +295,9 @@ the grey remainder did not, and is read against the steel beside it. …
 
 Every chart carries the rule id and its title, the principle id and its
 title, and the principle's signature and reads from the table at the top of
-`principles/README.md`; the script prints them, so a chart is never cryptic
-to someone without the frame open. Every chart carries the denominator: a
+`principles/README.md`; the script writes them into the companion file and
+draws them into the SVG's header, so a chart is never cryptic to someone
+without the frame open and the frame cannot be lost in a paste. Every chart carries the denominator: a
 bar is everything in the band and what adhered is drawn over it, so the
 finding is the visible remainder and never a count alone. Thin bands are
 hatched and labelled; a window under the floor is hollow; a chart that
