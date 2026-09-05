@@ -7,8 +7,8 @@ the reader picks. The script writes one .svg into the case directory (or
 --out) that carries everything a reader needs: the frame above the chart —
 rule and principle with their titles, the principle's signature and what it
 reads, from the table in principles/README.md — and the figures the chart is
-read against below it. The companion file beside it repeats the same in
-markdown, for readers who index text rather than pictures.
+read against below it. The same frame and caption are printed, for the
+conversation; nothing else is written.
 
   1  landing timeline            R-001 R-004 R-006 R-007   P-1
   2  care by size band           R-011 R-027               P-8
@@ -167,7 +167,7 @@ def frame_rows(n):
 
 
 def frame_table(n):
-    """The frame as a markdown table, for the companion file."""
+    """The frame as a markdown table, for the conversation."""
     out = ["| | |", "|---|---|"]
     for label, text in frame_rows(n):
         out.append(f"| **{label}** | {text} |")
@@ -678,25 +678,11 @@ def main():
     path = out / f"{rid}-chart-{n}.svg"
     path.write_text(with_frame(svg, name, title, rows, cap))
 
-    block = (f"## {name} — {title}\n\n{frame_table(n)}\n\n"
-             f"![{name}: {title}]({path.name})\n\n{cap}\n")
-    # The companion file is written here, not pasted: the first field runs
-    # dropped the frame between stdout and the file. One section per chart,
-    # replaced in place when the same chart is drawn again for this reading.
-    companion = out / f"{rid}.charts.md"
-    marker = f"<!-- chart {n} -->"
-    section = f"{marker}\n{block}\n"
-    text = companion.read_text() if companion.exists() else f"# {name} — charts\n\n"
-    if marker in text:
-        head, rest = text.split(marker, 1)
-        nxt = rest.find("<!-- chart ")
-        text = head + section + (rest[nxt:] if nxt >= 0 else "")
-    else:
-        text = text.rstrip("\n") + "\n\n" + section
-    companion.write_text(text)
-    print(block)
+    # The SVG is the whole deliverable — frame above, chart, caption below.
+    # What is printed is for the conversation: the same frame and caption in
+    # text, so the reader who asked sees what was drawn without opening it.
+    print(f"## {name} — {title}\n\n{frame_table(n)}\n\n{cap}\n")
     sys.stderr.write(f"case-charts: wrote {path}\n")
-    sys.stderr.write(f"case-charts: companion {companion} (section for chart {n} written)\n")
 
 
 if __name__ == "__main__":

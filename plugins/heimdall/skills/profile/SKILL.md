@@ -231,18 +231,15 @@ Draw with the script, never by hand:
 "$H"/bin/case-charts <n> --since <base date> --until <head date>    # n = 1..5, per the table above
 ```
 
-It writes one SVG into the case directory **and writes the companion file
-itself**, `<id>.charts.md` beside the case file: one section per chart, with
-the frame as a table — each rule and its title, each principle and its
-title, the signature and what it reads — the image, and the figures the
-chart is read against. Pass `--id <id>` so the files sit with the reading.
-There is nothing to paste and nothing to write by hand; the frame is drawn
-into the SVG above the chart and the caption below it, so the picture
-carries everything on its own. Never put a chart into the case file itself. Hand the SVG and the
-companion file over the same way as the case file: sent, and their
-absolute paths spoken. The markdown it prints already carries the rule and
-principle titles, the signature and what it reads, and the figures the chart
-is read against; add nothing above it and nothing that grades below it. For
+It writes one SVG into the case directory, and the SVG is the whole
+deliverable: the frame drawn above the chart — each rule and its title, each
+principle and its title, the signature and what it reads — the chart, and
+the figures it is read against below. Pass `--id <id>` so the file sits with
+the reading; drawing the same chart again for the same reading overwrites
+it. There is no companion file and nothing to paste or write by hand; what
+the script prints is the same frame and caption in text, for the
+conversation. Never put a chart into the case file itself. Hand the SVG
+over the same way as the case file: sent, and its absolute path spoken. For
 chart 5's branch panel, run `"$H"/bin/open-ended-work --record` first so the
 reading's sidecar exists; with one reading the panel shows survivors by
 start window and says it is inflow only.
@@ -250,8 +247,7 @@ start window and says it is inflow only.
 The same rules as the notes: the codename and rule ids in titles, never a
 path or anything from the target; no author anywhere; no colour that grades;
 a draft rule's observation drawn in the same muted style as a signal with no
-rule. The companion file is gitignored with the case and handed over the same
-way.
+rule. The SVG is gitignored with the case and handed over the same way.
 
 **An offer, worked.** The strip row for the reading just written, with
 invented figures:
@@ -273,7 +269,7 @@ Nothing under P-10 or P-14 engaged. The offer is two lines and a question:
 > untested landings in the band where the convention holds. Draw either?
 
 If the reader says yes to the second, `case-charts 2` writes the SVG and
-the companion file, whose section for it begins:
+prints, for the conversation:
 
 ````markdown
 ## TALLOW — Care by size band
@@ -286,8 +282,6 @@ the companion file, whose section for it begins:
 | **signature** | synthetic pace |
 | **reads** | content |
 
-![TALLOW: Care by size band](2026-09-04-3f1c2a9-b7d40e1-chart-2.svg)
-
 156 landings between 2025-09-01 and 2026-09-01. Each bar is every landing in
 the band and the steel part arrived with a test change or an inline test;
 the grey remainder did not, and is read against the steel beside it. …
@@ -295,10 +289,9 @@ the grey remainder did not, and is read against the steel beside it. …
 
 Every chart carries the rule id and its title, the principle id and its
 title, and the principle's signature and reads from the table at the top of
-`principles/README.md`; the script writes them into the companion file and
-draws them into the SVG above the chart, with the caption below it, so a
-chart is never cryptic to someone without the frame open and nothing can be
-lost in a paste. Every chart carries the denominator: a
+`principles/README.md`; the script draws them into the SVG above the chart,
+with the caption below it, so a chart is never cryptic to someone without
+the frame open and nothing can be lost in a paste. Every chart carries the denominator: a
 bar is everything in the band and what adhered is drawn over it, so the
 finding is the visible remainder and never a count alone. Thin bands are
 hatched and labelled; a window under the floor is hollow; a chart that
