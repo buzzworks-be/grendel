@@ -124,12 +124,26 @@ def rule_titles():
 
 
 def principle_rows():
-    """id -> (title, signature, reads) from the table at the top of principles/README.md."""
+    """id -> (title, signature, reads) from the table at the top of principles/README.md.
+
+    The README ships with the plugin from 0.12.2; before that it did not, and
+    the caption crashed on an install that had every rule and no table. If it
+    is missing, titles come from PRINCIPLES.md headings and the signature and
+    reads columns are left blank rather than the chart left undrawn."""
     out = {}
-    for line in (ROOT / "principles" / "README.md").read_text().splitlines():
-        m = re.match(r"^\|\s*(P-\d+)\s*\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|\s*$", line)
-        if m:
-            out[m.group(1)] = (m.group(2).strip(), m.group(4).strip(), m.group(5).strip())
+    readme = ROOT / "principles" / "README.md"
+    if readme.exists():
+        for line in readme.read_text().splitlines():
+            m = re.match(r"^\|\s*(P-\d+)\s*\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|\s*$", line)
+            if m:
+                out[m.group(1)] = (m.group(2).strip(), m.group(4).strip(), m.group(5).strip())
+    if not out:
+        prin = ROOT / "principles" / "PRINCIPLES.md"
+        if prin.exists():
+            for line in prin.read_text().splitlines():
+                m = re.match(r"^## (P-\d+)\.\s+(.*)$", line)
+                if m:
+                    out[m.group(1)] = (m.group(2).strip(), "", "")
     return out
 
 
@@ -140,9 +154,12 @@ def frame_caption(n):
     for p in pids:
         t, sig, reads = prin.get(p, ("", "", ""))
         parts.append(f"**{p}** {t}")
-    sigs = sorted({prin[p][1] for p in pids if p in prin})
-    reads = sorted({prin[p][2] for p in pids if p in prin})
-    parts.append(f"signature: {' · '.join(sigs).lower()}; reads: {' · '.join(reads).lower()}")
+    sigs = sorted({prin[p][1] for p in pids if p in prin and prin[p][1]})
+    reads = sorted({prin[p][2] for p in pids if p in prin and prin[p][2]})
+    if sigs or reads:
+        parts.append(f"signature: {' · '.join(sigs).lower()}; reads: {' · '.join(reads).lower()}")
+    else:
+        parts.append("signature and reads: not available on this install (principles/README.md missing)")
     return " — ".join(parts)
 
 
