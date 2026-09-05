@@ -186,8 +186,10 @@ fi
 rm -rf .heimdall
 # Files under other codenames are invisible from here otherwise, and an
 # operator who purges one case can believe the machine is clean when it is not.
-# Codenames are safe to print; they name no repository.
-tidy_shells "${codename:-}"
+# Codenames are safe to print; they name no repository. The case just closed
+# is not spared: an attach that never profiled is a shell like any other, and
+# the first version left exactly that one standing while naming the rest.
+tidy_shells ""
 python3 - "$STATE" "${codename:-}" <<'PY' || true
 import sys
 from pathlib import Path
