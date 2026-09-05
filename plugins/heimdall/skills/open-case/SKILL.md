@@ -1,12 +1,12 @@
 ---
 name: open-case
-description: Open a case: attach a target repository, read-only, then survey it. Invoke by name.
+description: "Open a case: attach a target repository, read-only, then survey it. Invoke by name."
 ---
 
 # Open case
 
 The start action. It attaches a target, confirms what landed, and then goes
-straight into the survey. The survey is `/stakeout`, a skill of its own,
+straight into the stakeout. The stakeout is `/stakeout`, a skill of its own,
 because this skill changes Heimdall's state and the survey reads and never
 writes: keeping them separate is what lets the survey be re-run at any point
 in a case without re-attaching. It is not a reason to stop between them and
@@ -77,12 +77,12 @@ Installed as a plugin that is a data directory under the user's home, not
 the working directory, and a user who is not told will not find the case
 file later; say it now, and that `HEIMDALL_STATE=<dir>` moves it.
 
-Then **survey**, without being asked: say that the survey begins and follow
+Then **the stakeout**, without being asked: say that the stakeout begins and follow
 `skills/stakeout/SKILL.md` to the end — history, shape, workflow facts,
 observer-awareness, the target's stated conventions. Two exceptions only: the
 user said to attach and nothing more ("just attach", "attach only"), or the
 attachment did not succeed, in which case there is nothing to survey and the
-failure is the report. The survey can be re-run later with `/stakeout` on its
+failure is the report. The stakeout can be re-run later with `/stakeout` on its
 own, because it reads and never writes.
 
 ## The boundary

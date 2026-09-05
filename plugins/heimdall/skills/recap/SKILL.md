@@ -1,6 +1,6 @@
 ---
 name: recap
-description: One screen: what Heimdall is and what is currently true.
+description: "One screen: what Heimdall is and what is currently true."
 ---
 
 # Recap

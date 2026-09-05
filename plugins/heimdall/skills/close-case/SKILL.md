@@ -1,6 +1,6 @@
 ---
 name: close-case
-description: Close the case: final leak sweep, then detach. Invoke by name.
+description: "Close the case: final leak sweep, then detach. Invoke by name."
 ---
 
 # Close case
