@@ -4,9 +4,11 @@
 The design is docs/graphics.md. Nothing here is drawn unasked: /profile offers
 a chart when the strip row makes it relevant and calls this only for the ones
 the reader picks. The script writes one .svg into the case directory (or
---out) and prints the markdown that references it, caption included: rule and
-principle with their titles, the principle's signature and what it reads from
-the table in principles/README.md, and the figures the chart is read against.
+--out) that carries everything a reader needs: the frame above the chart —
+rule and principle with their titles, the principle's signature and what it
+reads, from the table in principles/README.md — and the figures the chart is
+read against below it. The companion file beside it repeats the same in
+markdown, for readers who index text rather than pictures.
 
   1  landing timeline            R-001 R-004 R-006 R-007   P-1
   2  care by size band           R-011 R-027               P-8
@@ -172,26 +174,35 @@ def frame_table(n):
     return "\n".join(out)
 
 
-def with_frame(svg, name, title, rows):
-    """The chart with its frame drawn above it, so the picture says what it is
-    even when it travels without its companion text."""
+def with_frame(svg, name, title, rows, caption):
+    """The chart with its frame drawn above it and its caption below, so the
+    picture says what it is and what it shows even when it travels alone."""
+    import textwrap
     line_h, pad = 15, 12
     head_h = pad + 20 + len(rows) * line_h + pad
-    parts = [f'<rect x="0" y="0" width="{svg.w}" height="{head_h + svg.h}" fill="{PAPER}"/>']
+    cap_lines = textwrap.wrap(caption, width=150)
+    foot_h = pad + len(cap_lines) * 14 + pad
+    total = head_h + svg.h + foot_h
+    esc = lambda t: t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    parts = [f'<rect x="0" y="0" width="{svg.w}" height="{total}" fill="{PAPER}"/>']
     y = pad + 14
     parts.append(f'<text x="16" y="{y}" font-family="{FONT}" font-size="13" fill="{INK}" font-weight="500">'
-                 f'{name} — {title}</text>')
+                 f'{esc(name)} — {esc(title)}</text>')
     y += 6
     for label, text in rows:
         y += line_h
-        esc = lambda t: t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         parts.append(f'<text x="16" y="{y}" font-family="{MONO}" font-size="10.5" fill="{INK}" font-weight="500">{esc(label)}</text>')
         parts.append(f'<text x="112" y="{y}" font-family="{FONT}" font-size="10.5" fill="{INK2}">{esc(text)}</text>')
     parts.append(f'<line x1="16" y1="{head_h - 4}" x2="{svg.w - 16}" y2="{head_h - 4}" stroke="{RULE}" stroke-width="0.8"/>')
-    inner = "".join(svg.parts)
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {svg.w} {head_h + svg.h}" '
-            f'width="{svg.w}" height="{head_h + svg.h}" font-family="{FONT}">'
-            + "".join(parts) + f'<g transform="translate(0,{head_h})">' + inner + "</g></svg>")
+    inner = f'<g transform="translate(0,{head_h})">' + "".join(svg.parts) + "</g>"
+    y = head_h + svg.h
+    parts.append(f'<line x1="16" y1="{y + 2}" x2="{svg.w - 16}" y2="{y + 2}" stroke="{RULE}" stroke-width="0.8"/>')
+    y += pad + 10
+    for line in cap_lines:
+        parts.append(f'<text x="16" y="{y}" font-family="{FONT}" font-size="10.5" fill="{INK2}">{esc(line)}</text>')
+        y += 14
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {svg.w} {total}" '
+            f'width="{svg.w}" height="{total}" font-family="{FONT}">' + "".join(parts) + inner + "</svg>")
 
 
 # ---- a small SVG writer ------------------------------------------------------
@@ -665,7 +676,7 @@ def main():
     name = codename()
     rows = frame_rows(n)
     path = out / f"{rid}-chart-{n}.svg"
-    path.write_text(with_frame(svg, name, title, rows))
+    path.write_text(with_frame(svg, name, title, rows, cap))
 
     block = (f"## {name} — {title}\n\n{frame_table(n)}\n\n"
              f"![{name}: {title}]({path.name})\n\n{cap}\n")

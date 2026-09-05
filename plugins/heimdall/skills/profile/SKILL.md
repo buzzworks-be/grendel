@@ -236,9 +236,9 @@ itself**, `<id>.charts.md` beside the case file: one section per chart, with
 the frame as a table — each rule and its title, each principle and its
 title, the signature and what it reads — the image, and the figures the
 chart is read against. Pass `--id <id>` so the files sit with the reading.
-There is nothing to paste and nothing to write by hand; the same frame is
-drawn into the SVG's header, so the picture says what it is even on its
-own. Never put a chart into the case file itself. Hand the SVG and the
+There is nothing to paste and nothing to write by hand; the frame is drawn
+into the SVG above the chart and the caption below it, so the picture
+carries everything on its own. Never put a chart into the case file itself. Hand the SVG and the
 companion file over the same way as the case file: sent, and their
 absolute paths spoken. The markdown it prints already carries the rule and
 principle titles, the signature and what it reads, and the figures the chart
@@ -296,8 +296,9 @@ the grey remainder did not, and is read against the steel beside it. …
 Every chart carries the rule id and its title, the principle id and its
 title, and the principle's signature and reads from the table at the top of
 `principles/README.md`; the script writes them into the companion file and
-draws them into the SVG's header, so a chart is never cryptic to someone
-without the frame open and the frame cannot be lost in a paste. Every chart carries the denominator: a
+draws them into the SVG above the chart, with the caption below it, so a
+chart is never cryptic to someone without the frame open and nothing can be
+lost in a paste. Every chart carries the denominator: a
 bar is everything in the band and what adhered is drawn over it, so the
 finding is the visible remainder and never a count alone. Thin bands are
 hatched and labelled; a window under the floor is hollow; a chart that
