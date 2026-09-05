@@ -37,8 +37,8 @@ about anyone's conduct.
 
 | | |
 |---|---|
-| `/open-case` | attach a target, read-only |
-| `/stakeout` | survey it — history, shape, workflow facts |
+| `/open-case` | attach a target, read-only, then survey it |
+| `/stakeout` | the survey on its own — history, shape, workflow facts — re-run any time |
 | `/profile` | read one range, run the rules, write the case file |
 | `/update-target` | the target moved — fetch it, report what landed |
 | `/close-case` | final leak sweep, then detach |

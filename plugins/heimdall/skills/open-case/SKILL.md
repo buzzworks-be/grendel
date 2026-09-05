@@ -1,14 +1,17 @@
 ---
 name: open-case
-description: Open a case: attach a target repository, read-only. Invoke by name.
+description: Open a case: attach a target repository, read-only, then survey it. Invoke by name.
 ---
 
 # Open case
 
-The start action. It attaches a target and confirms what landed — nothing more.
-The reading of what is in the target is `/stakeout`, deliberately separate: this
-skill changes Heimdall's state, and a state change should not be bundled with an
-interpretation that a reader may want to re-run without repeating it.
+The start action. It attaches a target, confirms what landed, and then goes
+straight into the survey. The survey is `/stakeout`, a skill of its own,
+because this skill changes Heimdall's state and the survey reads and never
+writes: keeping them separate is what lets the survey be re-run at any point
+in a case without re-attaching. It is not a reason to stop between them and
+wait to be asked. Confirm first, so the state change stands on its own in
+the transcript; then survey.
 
 ## Where the scripts are
 
@@ -74,9 +77,13 @@ Installed as a plugin that is a data directory under the user's home, not
 the working directory, and a user who is not told will not find the case
 file later; say it now, and that `HEIMDALL_STATE=<dir>` moves it.
 
-Then stop and offer the survey. Everything else — history, shape, workflow
-facts, observer-awareness, the target's stated conventions — belongs to
-`/stakeout`, which reads and never writes and can therefore be re-run freely.
+Then **survey**, without being asked: say that the survey begins and follow
+`skills/stakeout/SKILL.md` to the end — history, shape, workflow facts,
+observer-awareness, the target's stated conventions. Two exceptions only: the
+user said to attach and nothing more ("just attach", "attach only"), or the
+attachment did not succeed, in which case there is nothing to survey and the
+failure is the report. The survey can be re-run later with `/stakeout` on its
+own, because it reads and never writes.
 
 ## The boundary
 
