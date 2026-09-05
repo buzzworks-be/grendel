@@ -113,6 +113,9 @@ Three limitations to state in any case file citing this rule:
   knows how to institutionalise a practice and did not do it for this one.
 - Never a contributor, a name, a handle, or a count from which either could be
   worked out.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

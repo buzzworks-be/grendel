@@ -324,6 +324,13 @@ is convention-bound); a bare clone carries only what the remote kept; and the
 most recent window is full of pull requests awaiting review, which look
 identical from git, so only refs older than a window are called stale. What it
 cannot see at all: work begun, abandoned and deleted. The stock is a floor.
+And one reading sees only inflow: where refs are removed on landing,
+everything that resolved has vanished, so begun-per-window is survivors by
+start date and says nothing about growth. The delta is a cross-reading
+quantity — with `--record` the reading leaves a sidecar of hashed tips in the
+case directory, and the next reading reports begun, resolved and still
+outstanding since. A surviving ref did not land here, which is not the same
+as unfinished.
 
 **A constraint from P-6.** Branch names frequently carry a contributor's
 handle. The script prints them so a reader can look; a case file must not

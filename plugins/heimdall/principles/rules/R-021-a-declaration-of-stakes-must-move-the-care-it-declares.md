@@ -71,6 +71,9 @@ Limitations to state in a case file:
   test rate, and where measurable the median review interval per line.
 - Whether anything else changed at the same date — a convention document, a
   pipeline — that would explain a movement the declaration did not cause.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

@@ -122,6 +122,9 @@ history that `bin/target-git` reads. A finding here means the *interval* was too
 short — it can never mean no review happened on the platform. Where platform
 review records are available through the evidence given to the assessment, check
 them before citing; where they are not, say the case file is blind to them.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

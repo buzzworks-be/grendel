@@ -111,6 +111,9 @@ to be read" will assume a review window was missed, which is not the claim.
 Cite the coverage split alongside it. R-004 findings mean something different in
 a repository where a tenth of the work lands on the trunk than in one where most
 of it does.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

@@ -76,6 +76,9 @@ Limitations to state in a case file:
 - What kind of markers they are, from reading a sample. A finding that reports
   a count and cannot say whether the markers are index entries, deferred
   design questions, or known defects has not been adjudicated.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

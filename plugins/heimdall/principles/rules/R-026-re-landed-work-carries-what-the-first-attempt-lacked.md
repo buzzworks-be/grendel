@@ -57,6 +57,9 @@ Limitations to state in a case file:
 - The three shas, both attempts' test and source churn, and the convention.
 - What the revert was for, from its message: a test could only have caught
   some reasons.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

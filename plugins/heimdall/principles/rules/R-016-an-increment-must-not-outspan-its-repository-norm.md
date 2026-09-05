@@ -96,6 +96,9 @@ Limitations to state in a case file:
   (an API rename, a signature change) or several concerns in one landing. The
   first is wide; the second is the shape this rule exists for, and only a
   reading can tell them apart.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

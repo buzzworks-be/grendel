@@ -97,6 +97,9 @@ Cite drift as a **rate and a worst-list**, not as individual accusations — one
 drifting document is weak evidence, a growing share of them is the trajectory
 P-3 warns about. Phantoms are individually citable; the claim is checkable and
 false.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

@@ -96,6 +96,12 @@ like an assessment of the right ones.
    - **violation** — with file, line, ref, and what specifically breaks
    - **not applicable** — the increment does not touch what the rule governs
    Not applicable is not a pass. Do not report it as one.
+   **Every outcome carries its denominator**: what adhered beside what did
+   not, from the extractor's own rate. Two untested landings among forty
+   tested and two among four are different findings, and a count alone
+   invites a pattern the record may not hold. A quiet window is
+   not-applicable across the board, never a clean sweep: the record shows
+   nothing landed, not that nothing happened.
 4. Anything worth saying that maps to no rule is an **observation**. Label it
    as such. Do not invent a rule to give a preference authority it has not
    earned — instead, note that a rule may be missing.
@@ -241,39 +247,70 @@ If the reader says yes, the companion file `<id>.charts.md` gets:
 ````markdown
 ## TALLOW — a test arrived with the landing, by size band
 
+R-011, substantial implementation arrives with its verification, under
+P-8, where the repository verifies its work, code arrives with its
+verification. Signature: synthetic pace. Reads: content.
+
 Reading of 2026-09-04, 156 landings, window 2025-09-01 to 2026-09-01.
-Bars are the share of landings in each band that changed a test file or
-added an inline test; the line is the convention bar. The 100+ bands are
-one pooled regime. A band under five landings is marked thin.
+Each bar is every landing in the band; the part in the second tone
+arrived with a test change or an inline test, the remainder did not. The
+rates the rule tested, against a convention bar of 50%: 55%, 90%, 100%,
+then 67% and 100% on three and one landings, under the floor and not
+judged. The 100+ bands are one pooled regime.
 
 ```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"xyChart": {"plotColorPalette": "#C9C5BC, #4A6B7C, #9A948A"}}}}%%
 xychart-beta
-    title "TALLOW · R-011 · test rate by line band"
-    x-axis ["1-24 (115)", "25-99 (30)", "100-299 (11)", "300-999 (0, thin)", "1000+ (0, thin)"]
-    y-axis "share of landings, %" 0 --> 100
-    bar [55, 90, 100, 0, 0]
-    line [50, 50, 50, 50, 50]
+    title "TALLOW · R-011 · landings by line band, with and without a test"
+    x-axis ["1-24 (115)", "25-99 (30)", "100-299 (11)", "300-999 (3, thin)", "1000+ (1, thin)"]
+    y-axis "landings" 0 --> 120
+    bar [115, 30, 11, 3, 1]
+    bar [63, 27, 11, 2, 1]
 ```
 
-R-027 on the same reading, the other axis: net decisions added.
+R-027, a landing that opens new ways through the code arrives with its
+verification, under the same P-8: the other axis, net decisions added.
+Among landings adding five or more, thirty of thirty-one carried a test,
+a 97% convention; the one that did not is the observation on the strip,
+read against the thirty beside it.
 
 ```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"xyChart": {"plotColorPalette": "#C9C5BC, #4A6B7C, #9A948A"}}}}%%
 xychart-beta
-    title "TALLOW · R-027 · test rate by decision band"
+    title "TALLOW · R-027 · landings by decision band, with and without a test"
     x-axis ["0 (64)", "1-4 (61)", "5-14 (23)", "15-39 (6, thin)", "40+ (2, thin)"]
-    y-axis "share of landings, %" 0 --> 100
-    bar [41, 74, 96, 100, 100]
-    line [50, 50, 50, 50, 50]
+    y-axis "landings" 0 --> 70
+    bar [64, 61, 23, 6, 2]
+    bar [26, 45, 22, 6, 2]
 ```
 ````
 
-What the example keeps out: no author, no path, no colour instruction, no
-word that grades. The thin bands are drawn and labelled thin rather than
-dropped, because a dropped band reads as a clean one. A care-over-time
-chart is the same shape with windows on the x-axis, a bar series for the
-test rate and a second for reasoning, and a risk window marked in its
-label (`"2026-Q1 · release"`) because the block cannot shade; the stocks
-chart puts the surviving stock as bars and what was begun as a line.
+Every chart carries the rule id **and its title**, the principle id
+**and its title**, and the principle's **signature** and **reads** from
+the table at the top of `principles/README.md`, in its caption: a chart
+that says only `R-011` is cryptic to anyone without the frame open, and
+the companion file is read by people who do not have it. The signature
+tells the reader which kind of producer the concern is about; the reads
+column tells them whether they are looking at time, content, a record,
+structure or a trend. Every chart carries the **denominator**:
+the first bar series is everything in the band, the second is what
+adhered, drawn over it, so the finding is the visible remainder and never
+a count on its own; the rates and the convention bar go in the caption,
+since a counts axis cannot hold a line at 50%. Thin bands are visibly
+thin and say so in their labels; a band with no landings has no bar and
+its label says `(0)`. Put the directive at the top of every block so the
+two series and any line take one muted palette. What the example keeps
+out: no author, no path, no word that grades.
+
+A care-over-time chart is the same shape with windows on the x-axis, an
+empty first bar series, the test rate as the second and reasoning as a
+line, and a risk window marked in its label (`"2026-Q1 · release"`)
+because the block cannot shade. The stock chart for R-014 puts **readings
+of the case** on the x-axis, the stale stock as bars, and what was
+resolved and what was begun since the previous reading as two lines — the
+delta `bin/open-ended-work --record` makes available; with one reading
+only, fall back to survivors by start window and say in the caption that
+this is inflow alone.
 
 ## When run as a workflow step
 

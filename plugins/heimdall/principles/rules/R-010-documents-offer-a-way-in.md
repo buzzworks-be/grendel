@@ -87,6 +87,9 @@ Two limitations to state in any case file citing this rule:
 - The repository's median span, so the outlier is visibly an outlier.
 - The non-prose fraction, even when it is low. It is what separates this finding
   from a lookup table, and a reader should see that it was checked.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

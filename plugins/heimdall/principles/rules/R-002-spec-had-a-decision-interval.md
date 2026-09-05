@@ -70,6 +70,9 @@ The specification commit, its documentation churn and file count, the
 implementation it was built on by (the same commit, or the one that followed),
 the interval, the reading time needed, and the thresholds used. Say which shape
 it is: "same act" and "no interval" mean different things to whoever fixes it.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

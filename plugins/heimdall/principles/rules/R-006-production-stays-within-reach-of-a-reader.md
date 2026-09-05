@@ -74,6 +74,9 @@ the share is the P-1 reading; a single fast run is much weaker.
 The run's first commit, commit count, churn, elapsed minutes, computed rate,
 and the parameters. State the comparison plainly: "N lines in M minutes is a
 sustained rate of R lines/hour against a ceiling of C."
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

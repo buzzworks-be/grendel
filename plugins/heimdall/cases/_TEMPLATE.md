@@ -131,6 +131,10 @@ may not have Heimdall's checkout, and a bare rule id is not actionable.>
 **Why this violates it:** <one or two sentences. Not a fix — a fix is the
 recipient's to decide.>
 
+**Beside it:** <what adhered — how many comparable units in the window
+satisfied the rule, next to how many did not. Never omitted: a count without
+its denominator invites a pattern the record may not hold.>
+
 <!-- Repeat per finding, most severe first. -->
 
 ## Observations

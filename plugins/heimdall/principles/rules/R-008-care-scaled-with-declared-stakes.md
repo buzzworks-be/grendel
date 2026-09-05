@@ -143,6 +143,9 @@ Two limitations to state in any case file citing this rule:
 - Both medians and the ratio, not the ratio alone.
 - The merges themselves: sha, lines, window, and merge time — the ones with the
   least window per line, which are what a reader will want to look at first.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

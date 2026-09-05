@@ -101,6 +101,9 @@ Limitations to state in any case file citing this rule:
   whether the new decisions were a feature's logic, a platform-specific path,
   an error-handling cascade or a deprecation guard has not been adjudicated,
   only echoed.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

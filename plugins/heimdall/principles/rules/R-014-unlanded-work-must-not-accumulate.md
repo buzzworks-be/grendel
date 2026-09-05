@@ -36,6 +36,22 @@ branches and the platform's own are excluded by name pattern.
 review, which look identical from git. Only a ref whose last commit is older
 than one window is past that explanation.
 
+**A surviving ref did not land here. That is not the same as unfinished.**
+Work continues on forks, in successor branches after a rebase, and in places
+git does not see; silence in the clone is not idleness. The rule's claim is
+about branches that did not land in this repository, and a case file must
+say it that way.
+
+**One reading sees only inflow; the delta is read across readings.** On a
+repository that removes refs when work lands, everything that resolved has
+vanished, so "begun per window" counts the survivors by their start date and
+cannot say whether the stock is growing — a repository that begins and
+resolves five branches a window has a flat stock and the same shape. Where a
+previous reading of the same case left its sidecar (`--record`), the
+extractor reports begun, resolved and still outstanding since, and the
+finding rests on the stale stock having grown. With one reading only, the
+condition below is held to an **observation**, whatever the run length.
+
 **What landed is decided by three tests, not one.** On a squash-landing
 repository every surviving branch is unreachable from the trunk whether it
 landed or not. A branch is called landed if its tip is reachable, or it has no
@@ -81,9 +97,15 @@ Limitations to state in a case file:
 - The stale stock in windows of the trunk's own throughput, which is what
   makes the number comparable across repositories of different pace.
 - Never a branch name. Cite ages, sizes and counts.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 
+- **Work that continued where git cannot see it** — a fork, a successor
+  branch after a rebase, a design thread — or was deliberately parked. The
+  ref did not land here; the rule cannot say the work stopped.
 - **Open pull requests under review**, which is why the most recent window is
   excluded and why a reader should check the youngest stale refs before
   believing the count.
@@ -123,3 +145,14 @@ Limitations to state in a case file:
 
   Held at `draft`: the run length and floor were chosen, and the rule has one
   history on which it engaged.
+
+- **Amended on 2026-09-04, on two readings of its own text.** The extractor's
+  summary said "what survives was not finished", which git does not support:
+  a surviving ref did not land here, and work continues in places the clone
+  cannot see. Reworded, and an exemption added for it. The second reading
+  was the deeper one: the condition counts survivors by start date, which is
+  inflow with the outflow deleted, so a steady-state repository shows the
+  same shape as an accumulating one. The extractor now leaves a hashed
+  sidecar per reading and reports begun, resolved and still outstanding
+  against the previous one; the finding rests on the stale stock growing,
+  and with one reading only it is held to an observation.

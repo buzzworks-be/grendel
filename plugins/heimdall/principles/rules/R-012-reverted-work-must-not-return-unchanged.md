@@ -77,6 +77,9 @@ Two limitations to state in any case file citing this rule:
   has not been adjudicated, only echoed.
 - Anything that landed between the revert and the re-land touching the same
   paths, since that is where the "fixed elsewhere" exemption lives.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

@@ -127,6 +127,9 @@ Two limitations to state in any case file citing this rule:
 - What kind of change it was, from reading the diff. A finding that does not say
   whether the code was new behaviour, a refactor or a rename has not been
   adjudicated, only echoed.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

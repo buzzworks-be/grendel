@@ -102,6 +102,9 @@ Cite the **rate** as the primary finding, not the individual increments. One
 increment without reasoning is weak evidence, for the reasons below. A
 persistent share of them, against a repository that mostly does attach
 reasoning, is the actual signal.
+- **What adhered, beside what did not.** The count of comparable units in the
+  window that satisfied this rule, next to the count that did not, so the
+  finding is read against the practice and not alone.
 
 ## Not a violation
 

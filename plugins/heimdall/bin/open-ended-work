@@ -23,14 +23,27 @@ what share of landed branches still have a ref — and R-014 stands down where
 it cannot.
 
 What git cannot show at all: branches that were begun, abandoned and deleted.
-The stock reported is a floor.
+The stock reported is a floor. And a surviving branch DID NOT LAND HERE, which
+is not the same as unfinished: work continues on forks, in successor branches
+and in places git does not see, and silence in the clone is not idleness.
+
+One reading sees only inflow. On a repository that removes refs on landing,
+everything that resolved has vanished, so "begun per window" counts survivors
+by their start date and says nothing about whether the stock is growing. The
+delta is a cross-reading quantity: with --record the reading leaves a sidecar
+in the case directory (hashed tips, no names — branch names carry handles, and
+P-6 forbids keeping them), and the next reading reports begun, resolved and
+still outstanding since, and whether the stale stock grew. R-014 rests on
+that delta where one exists.
 
 Usage:
   bin/open-ended-work
   bin/open-ended-work --window 30 --windows 4
+  bin/open-ended-work --record        # also leave this reading's sidecar in the case dir
 """
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -103,6 +116,28 @@ def is_ancestor(a, b):
     return tg_try("merge-base", "--is-ancestor", a, b)[0] == 0
 
 
+def case_dir():
+    p = subprocess.run([str(ROOT / "bin" / "case-dir"), "--check"], capture_output=True, text=True)
+    return Path(p.stdout.strip()) if p.returncode == 0 and p.stdout.strip() else None
+
+
+def fingerprint(sha):
+    """A ref is remembered by a hash of its tip, never by its name or its sha."""
+    return hashlib.sha256(sha.encode()).hexdigest()[:16]
+
+
+def previous_sidecar(cdir):
+    if not cdir:
+        return None, None
+    files = sorted(cdir.glob("s9-*.json"))
+    if not files:
+        return None, None
+    try:
+        return json.loads(files[-1].read_text()), files[-1]
+    except ValueError:
+        return None, files[-1]
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -113,6 +148,8 @@ def main():
                     help="how many consecutive windows to read back over")
     ap.add_argument("--min-stale", type=int, default=DEFAULT_MIN_STALE)
     ap.add_argument("--retention-bar", type=float, default=DEFAULT_RETENTION_BAR)
+    ap.add_argument("--record", action="store_true",
+                    help="write this reading's outstanding set to the case directory, hashed")
     a = ap.parse_args()
     ref = a.ref or default_ref()
     now = int(datetime.now(timezone.utc).timestamp())
@@ -239,12 +276,45 @@ def main():
               + "  (surviving refs only — deleted abandonments are invisible)")
         ahead_total = sum(o["ahead"] or 0 for o in outstanding)
         print(f"  commits held outstanding: {ahead_total}; stale (older than one window): {len(stale)}")
+        print(f"  (a surviving ref did not land here; that is not the same as unfinished)")
         for o in outstanding[:12]:
             print(f"    {(now - o['tip']) // day:>5}d  ahead={o['ahead'] if o['ahead'] is not None else '?':>4}  {o['name']}")
         if len(outstanding) > 12:
             print(f"    … {len(outstanding) - 12} more")
     else:
         stale, begun_per_window = [], [0] * a.windows
+
+    # ---- across readings: the delta one reading cannot see ------------------
+    cdir = case_dir()
+    prev, prev_path = previous_sidecar(cdir)
+    now_set = {fingerprint(o["sha"]): {"begun": o["begun"], "tip": o["tip"],
+                                       "stale": now - o["tip"] > a.window * day}
+               for o in outstanding}
+    delta = None
+    if prev and isinstance(prev.get("outstanding"), dict):
+        before = prev["outstanding"]
+        begun_since = [h for h in now_set if h not in before]
+        resolved_since = [h for h in before if h not in now_set]
+        still = [h for h in now_set if h in before]
+        stale_before = sum(1 for v in before.values() if v.get("stale"))
+        delta = {"reading": prev.get("reading", "?"), "begun": len(begun_since),
+                 "resolved": len(resolved_since), "still": len(still),
+                 "stale_before": stale_before, "stale_now": len(stale)}
+        print(f"  since the previous reading ({delta['reading'][:10]}): begun {delta['begun']}, "
+              f"resolved {delta['resolved']} (landed or deleted — git cannot say which), "
+              f"still outstanding {delta['still']}; stale stock {stale_before} → {len(stale)}")
+    elif cdir:
+        print("  no previous reading in this case; the delta needs two readings (run with --record)")
+    if a.record:
+        if not cdir:
+            print("  --record ignored: no case open, nowhere to leave the sidecar")
+        else:
+            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            out = cdir / f"s9-{stamp}.json"
+            out.write_text(json.dumps({"reading": datetime.now(timezone.utc).isoformat(),
+                                       "window_days": a.window, "outstanding": now_set},
+                                      indent=1, sort_keys=True))
+            print(f"  recorded this reading's outstanding set (hashed tips, no names): {out.name}")
 
     # ---- R-014 --------------------------------------------------------------
     print()
@@ -266,12 +336,27 @@ def main():
     print(f"  stale outstanding: {len(stale)}; landings per window: {rate:.1f}; "
           f"stale stock is {len(stale) / rate if rate else float('inf'):.1f} window(s) of throughput")
     print(f"  longest run of consecutive windows in which stale work was begun: {best}")
-    if best >= DEFAULT_RUN:
+    if delta is not None:
+        grew = delta["stale_now"] > delta["stale_before"]
+        print(f"  across readings: stale stock {delta['stale_before']} → {delta['stale_now']} "
+              f"(begun {delta['begun']}, resolved {delta['resolved']}): "
+              + ("growing." if grew else "not growing."))
+    else:
+        grew = None
+        print("  one reading: inflow only — survivors by start date, nothing about growth.")
+    if best >= DEFAULT_RUN and grew is not False:
         print("R-014: CANDIDATE FINDING — outstanding work accumulates across consecutive windows.")
         print("  Work was begun and left in nearly every window, on a repository that")
-        print("  removes refs when work lands — so what survives was not finished.")
-        print("  Open pull requests awaiting review look identical from git; check the")
-        print("  youngest before believing the count. R-014's Not a violation section applies.")
+        print("  removes refs when work lands — so what survives did not land here.")
+        print("  That is not the same as unfinished: work continues on forks, in")
+        print("  successor branches and in places git does not see. Open pull requests")
+        print("  awaiting review look identical from git; check the youngest before")
+        print("  believing the count. R-014's Not a violation section applies.")
+        if grew is None:
+            print("  Held to an observation until a second reading shows the stock growing.")
+    elif best >= DEFAULT_RUN:
+        print("R-014: no finding — stale work was begun in consecutive windows, but the")
+        print("  stock did not grow between readings: what is begun is also resolved.")
     else:
         print("R-014: no finding — the stale stock is old, not growing.")
     return 0
