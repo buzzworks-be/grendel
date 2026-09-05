@@ -89,10 +89,12 @@ CODENAME — <the period, in words>
 
 ## Coverage at a glance
 
-<!-- Technical output, beside the technical record. Not in the notes. -->
+<!-- Technical output, beside the technical record. Not in the notes. The
+     script's output whole: every block and the legend under them, verbatim.
+     A strip without its legend is a row of glyphs nobody can read. -->
 
 ```
-<bin/case-strip output for this reading>
+<bin/case-strip output for this reading, blocks and legend, unedited>
 ```
 
 ## Scope

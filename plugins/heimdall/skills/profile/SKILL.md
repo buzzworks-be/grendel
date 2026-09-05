@@ -136,7 +136,13 @@ Then render the strip and write the **notes** block:
 A run hands back **three** things, and keeping them apart is the point:
 
 - the **case file**, written to the case directory and offered as a file;
-- the **strip**, printed beside it — technical output, technical audience;
+- the **strip**, printed beside it — technical output, technical audience.
+  **Paste the script's output whole**: every block, the blank lines between
+  them, and the legend beneath, exactly as printed. Never retype it and never
+  trim it. The legend is part of the strip, not an explanation of it: a row
+  of glyphs without its key is unreadable to anyone who did not write it,
+  and since the strip broke into blocks of ten the legend has been the first
+  thing to go missing when the output is copied by hand;
 - the **notes**, printed in the conversation inside a fence.
 
 **The notes are plain English and contain no rule ids, no symbols and no frame
@@ -209,12 +215,20 @@ not-applicables offers nothing, and the offer is skipped in silence.
 | R-023 as observation, or a size–interval correlation reported near zero | Size against interval |
 | R-014 or R-015 as observation, or a rising stock in S-9/S-10 | Stocks of what did not finish |
 
-Offer only what you can draw. Until `bin/case-charts` exists, that is the
-three bar-and-line shapes — care by size band, care over time, the stocks —
-as `mermaid` blocks built from the extractor's printed numbers, written to a
-companion file `<id>.charts.md` beside the case file, never into the case
-file itself. The timeline and the scatter are not drawable without the
-script; do not offer them, and do not hand-draw an SVG.
+Draw with the script, never by hand:
+
+```sh
+"$H"/bin/case-charts <n> --since <base date> --until <head date>    # n = 1..5, per the table above
+```
+
+It writes one SVG into the case directory and prints the markdown to paste
+into the companion file `<id>.charts.md` beside the case file — never into
+the case file itself. The markdown it prints already carries the rule and
+principle titles, the signature and what it reads, and the figures the chart
+is read against; add nothing above it and nothing that grades below it. For
+chart 5's branch panel, run `"$H"/bin/open-ended-work --record` first so the
+reading's sidecar exists; with one reading the panel shows survivors by
+start window and says it is inflow only.
 
 The same rules as the notes: the codename and rule ids in titles, never a
 path or anything from the target; no author anywhere; no colour that grades;
@@ -231,86 +245,44 @@ invented figures:
             R-021 ~  R-022 ~  R-023 ·  R-024 ~  R-025 ~  R-026 ~  R-027 ·                    warning
 ```
 
-R-001 came back violation and R-006 cannot tell, so the timeline would be
-relevant, but it is not drawable yet and is not offered. R-011 and R-027
-are observations, so care by size band is. Nothing under P-10 or P-14
-engaged. The offer is two lines and a question:
+R-001 came back violation and R-006 cannot tell, so the timeline is
+relevant; R-011 and R-027 are observations, so care by size band is.
+Nothing under P-10 or P-14 engaged. The offer is two lines and a question:
 
-> Two charts would show something on this reading. **Care by size band**:
-> the test rate climbs from a third at 1-24 lines to nine in ten at 25-99,
-> with the two untested landings sitting in the band where the convention
-> holds. **Care over time** is not offered: no drift was reported. Draw the
-> first?
+> Two charts would show something on this reading. **Landing timeline**:
+> four bursts of direct landings in February, the largest with no interval
+> in which it could have been read. **Care by size band**: the test rate
+> climbs from a third at 1-24 lines to nine in ten at 25-99, with the two
+> untested landings in the band where the convention holds. Draw either?
 
-If the reader says yes, the companion file `<id>.charts.md` gets:
+If the reader says yes to the second, `case-charts 2` writes the SVG and
+prints the companion block, which begins:
 
 ````markdown
-## TALLOW — a test arrived with the landing, by size band
+## TALLOW — Care by size band
 
-R-011, substantial implementation arrives with its verification, under
-P-8, where the repository verifies its work, code arrives with its
-verification. Signature: synthetic pace. Reads: content.
+**R-011** Substantial implementation arrives with its verification — **R-027**
+A landing that opens new ways through the code arrives with its
+verification — **P-8** Where the repository verifies its work, code arrives
+with its verification — signature: synthetic pace; reads: content
 
-Reading of 2026-09-04, 156 landings, window 2025-09-01 to 2026-09-01.
-Each bar is every landing in the band; the part in the second tone
-arrived with a test change or an inline test, the remainder did not. The
-rates the rule tested, against a convention bar of 50%: 55%, 90%, 100%,
-then 67% and 100% on three and one landings, under the floor and not
-judged. The 100+ bands are one pooled regime.
+![TALLOW: Care by size band](2026-09-04-3f1c2a9-b7d40e1-chart-2.svg)
 
-```mermaid
-%%{init: {"theme": "neutral", "themeVariables": {"xyChart": {"plotColorPalette": "#C9C5BC, #4A6B7C, #9A948A"}}}}%%
-xychart-beta
-    title "TALLOW · R-011 · landings by line band, with and without a test"
-    x-axis ["1-24 (115)", "25-99 (30)", "100-299 (11)", "300-999 (3, thin)", "1000+ (1, thin)"]
-    y-axis "landings" 0 --> 120
-    bar [115, 30, 11, 3, 1]
-    bar [63, 27, 11, 2, 1]
-```
-
-R-027, a landing that opens new ways through the code arrives with its
-verification, under the same P-8: the other axis, net decisions added.
-Among landings adding five or more, thirty of thirty-one carried a test,
-a 97% convention; the one that did not is the observation on the strip,
-read against the thirty beside it.
-
-```mermaid
-%%{init: {"theme": "neutral", "themeVariables": {"xyChart": {"plotColorPalette": "#C9C5BC, #4A6B7C, #9A948A"}}}}%%
-xychart-beta
-    title "TALLOW · R-027 · landings by decision band, with and without a test"
-    x-axis ["0 (64)", "1-4 (61)", "5-14 (23)", "15-39 (6, thin)", "40+ (2, thin)"]
-    y-axis "landings" 0 --> 70
-    bar [64, 61, 23, 6, 2]
-    bar [26, 45, 22, 6, 2]
-```
+156 landings between 2025-09-01 and 2026-09-01. Each bar is every landing in
+the band and the steel part arrived with a test change or an inline test;
+the grey remainder did not, and is read against the steel beside it. …
 ````
 
-Every chart carries the rule id **and its title**, the principle id
-**and its title**, and the principle's **signature** and **reads** from
-the table at the top of `principles/README.md`, in its caption: a chart
-that says only `R-011` is cryptic to anyone without the frame open, and
-the companion file is read by people who do not have it. The signature
-tells the reader which kind of producer the concern is about; the reads
-column tells them whether they are looking at time, content, a record,
-structure or a trend. Every chart carries the **denominator**:
-the first bar series is everything in the band, the second is what
-adhered, drawn over it, so the finding is the visible remainder and never
-a count on its own; the rates and the convention bar go in the caption,
-since a counts axis cannot hold a line at 50%. Thin bands are visibly
-thin and say so in their labels; a band with no landings has no bar and
-its label says `(0)`. Put the directive at the top of every block so the
-two series and any line take one muted palette. What the example keeps
-out: no author, no path, no word that grades.
-
-A care-over-time chart is the same shape with windows on the x-axis, an
-empty first bar series, the test rate as the second and reasoning as a
-line, and a risk window marked in its label (`"2026-Q1 · release"`)
-because the block cannot shade. The stock chart for R-014 puts **readings
-of the case** on the x-axis, the stale stock as bars, and what was
-resolved and what was begun since the previous reading as two lines — the
-delta `bin/open-ended-work --record` makes available; with one reading
-only, fall back to survivors by start window and say in the caption that
-this is inflow alone.
+Every chart carries the rule id and its title, the principle id and its
+title, and the principle's signature and reads from the table at the top of
+`principles/README.md`; the script prints them, so a chart is never cryptic
+to someone without the frame open. Every chart carries the denominator: a
+bar is everything in the band and what adhered is drawn over it, so the
+finding is the visible remainder and never a count alone. Thin bands are
+hatched and labelled; a window under the floor is hollow; a chart that
+cannot be drawn on this history says so in place of a picture. What every
+chart keeps out: no author, no path, no colour that grades, no word that
+judges.
 
 ## When run as a workflow step
 
@@ -329,8 +301,8 @@ and nothing else does:
   findings. List in the case file what was provided and which findings it
   decided. No bundle, no lowered bar: those findings stay "cannot tell".
 - **Charts**: there is nobody to offer to, so draw none — unless the tasking
-  names one by its name in `docs/graphics.md`, in which case draw that one
-  and no other.
+  names one by its number or its name in `docs/graphics.md`, in which case
+  run `case-charts` for that one and no other, into the output directory.
 
 ## Honesty
 

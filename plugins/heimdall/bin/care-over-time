@@ -120,10 +120,13 @@ def inline_tests(diffargs):
 
 
 def build_series(ref, since_ts, act_gap_min, until_ts=None):
-    """Landings oldest first: dict(ts, code, test, doc, eligible, merge, interval, paths, subject, body)."""
+    """Landings oldest first: dict(ts, code, test, doc, eligible, merge, interval, paths, subject, body, route).
+
+    route is "merge", "forge" (a squash or rebase landing committed by the
+    hosting platform) or "direct"; bin/case-charts colours the timeline by it."""
     out, act, gap = [], [], act_gap_min * 60
 
-    def record(ts, rows, diffargs, merge, interval, subject, body):
+    def record(ts, rows, diffargs, merge, interval, subject, body, route):
         code = doc = test = 0
         paths = []
         for p, add, dele in rows:
@@ -144,15 +147,15 @@ def build_series(ref, since_ts, act_gap_min, until_ts=None):
         out.append({"ts": ts, "code": code, "test": test > 0, "doc": doc > 0,
                     "eligible": doc + code > 0 and doc / (doc + code) < DOC_DOMINANT,
                     "merge": merge, "interval": interval, "paths": paths,
-                    "subject": subject, "body": body})
+                    "subject": subject, "body": body, "route": route})
 
-    def flush():
+    def flush(route="direct"):
         if act:
             rows, diffargs = [], []
             for sha, _, _, _ in act:
                 rows += numstat("show", "--numstat", "-M", "--format=", sha)
                 diffargs.append(("show", "--unified=0", "--format=", sha))
-            record(act[0][1], rows, diffargs, False, None, act[0][2], act[0][3])
+            record(act[0][1], rows, diffargs, False, None, act[0][2], act[0][3], route)
             act.clear()
 
     log = tg("log", "--first-parent", ref, "--reverse", f"--since={since_ts}",
@@ -169,10 +172,10 @@ def build_series(ref, since_ts, act_gap_min, until_ts=None):
             tip_ts = int(tg("log", "-1", "--format=%ct", plist[1]).strip() or ts)
             rows = numstat("diff", "--numstat", "-M", f"{plist[0]}..{sha}")
             record(ts, rows, [("diff", "--unified=0", f"{plist[0]}..{sha}")], True,
-                   max(0, ts - tip_ts), subject, body)
+                   max(0, ts - tip_ts), subject, body, "merge")
         elif ce.strip().lower() in FORGE_COMMITTERS:
             flush()
-            act.append((sha, ts, subject, body)); flush()
+            act.append((sha, ts, subject, body)); flush("forge")
         else:
             if act and ts - act[-1][1] > gap:
                 flush()
