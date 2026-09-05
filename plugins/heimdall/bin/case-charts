@@ -76,8 +76,13 @@ def tg(*args):
 
 
 def resolve_ts(expr):
-    """Any date git understands, to a unix timestamp."""
-    out = subprocess.run(["git", "rev-parse", f"--since={expr}"], capture_output=True, text=True).stdout
+    """Any date git understands, to a unix timestamp.
+
+    Through target-git, never plain git: the session may be standing in a
+    directory that is not a repository at all, and the first field run of this
+    script failed exactly there — the resolver ran against the cwd and could
+    not read the very format its own help text shows."""
+    out = tg("rev-parse", f"--since={expr}")
     m = re.search(r"--max-age=(\d+)", out)
     if not m:
         sys.exit(f"case-charts: cannot read date: {expr}")
