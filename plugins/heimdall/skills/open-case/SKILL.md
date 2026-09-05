@@ -69,6 +69,10 @@ cheap read:
 is known good rather than assumed good.
 **Posture** — that Heimdall reads the target and never writes to it, and that
 nothing identifying it enters Heimdall's own files.
+**Where the case will live** — the absolute path `"$H"/bin/case-dir` prints.
+Installed as a plugin that is a data directory under the user's home, not
+the working directory, and a user who is not told will not find the case
+file later; say it now, and that `HEIMDALL_STATE=<dir>` moves it.
 
 Then stop and offer the survey. Everything else — history, shape, workflow
 facts, observer-awareness, the target's stated conventions — belongs to

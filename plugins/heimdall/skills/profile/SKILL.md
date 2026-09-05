@@ -191,7 +191,17 @@ retired between them) and which findings moved as a result. A reader comparing
 the two should not have to diff them.
 
 Then **hand it over**: send the file to the user (`SendUserFile`), or pass its
-path to whoever asked. Do not commit it. It is gitignored because it carries the
+path to whoever asked — and **say the absolute path**, of the case directory
+and of every file handed over, in the conversation. Installed as a plugin,
+the state root is a data directory under the user's home that nobody browses
+by accident (`"$H"/bin/heimdall-state` prints it), and a file that was sent
+but whose location was never spoken is a file the user cannot find an hour
+later. If the harness cannot send a file from the state root, copy it into
+the session's working directory, send it from there, and say both paths:
+where it was written and where the copy is. Mention once, at the first
+hand-over of a case, that `HEIMDALL_STATE=<dir>` before the session moves
+the state root — cases, sidecars and charts — somewhere the user chooses.
+Do not commit it. It is gitignored because it carries the
 target inside it, and Heimdall's own files must stay clean of that — run
 `"$H"/bin/check-no-leak` before committing anything while a target is attached.
 
@@ -223,7 +233,8 @@ Draw with the script, never by hand:
 
 It writes one SVG into the case directory and prints the markdown to paste
 into the companion file `<id>.charts.md` beside the case file — never into
-the case file itself. The markdown it prints already carries the rule and
+the case file itself. Hand the SVG and the companion file over the same way
+as the case file: sent, and their absolute paths spoken. The markdown it prints already carries the rule and
 principle titles, the signature and what it reads, and the figures the chart
 is read against; add nothing above it and nothing that grades below it. For
 chart 5's branch panel, run `"$H"/bin/open-ended-work --record` first so the

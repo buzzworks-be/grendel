@@ -46,7 +46,9 @@ about anyone's conduct.
 `ballistics` is an agent, not a command: `/profile` hands it one finding at a
 time, blind to the rest of the case.
 
-Readings are kept under the state root — `bin/heimdall-state` prints where. It
+Readings are kept under the state root — `bin/heimdall-state` prints where,
+and the recap says that path in full, because under a plugin it is a data
+directory the user never opens by accident. It
 can be shared across projects, which is why cases carry codenames and why
 closing one names the others still held.
 
